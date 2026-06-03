@@ -7,24 +7,27 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-text")
     .description("Send a text message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--content <content>", "Message content")
+    .argument("<chatId>", "Chat ID (user/group)")
+    .argument("<content>", "Text content")
+    .option("-f, --file <path>", "File path to attach", "")
+    .option("-t, --media-type <type>", "1=video, 2=image, 3=file (auto-detected if omitted)")
+    .option("--cover-image <path>", "Cover image path for video attachments", "")
     .option("-g, --group", "Send as group message", false)
-    .option("--mention-all", "Mention all group members", false)
-    .option("--mention <ids>", "Comma-separated user IDs to mention")
-    .option("--user-token <token>", "User token for user-context sending")
-    .option("--file-path <path>", "File path to attach")
-    .option("--media-type <type>", "Media type (1=video,2=image,3=file)")
-    .action(async (opts) => {
+    .option("--mention-all", "@all in group", false)
+    .option("--mention <ids...>", "User IDs to @mention")
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, content, opts) => {
       const client = getClient();
-      const mentionUserIds = opts.mention ? commaList(opts.mention) : undefined;
-      const result = await client.sendText(opts.chatId, opts.content, {
+      const result = await client.sendText(chatId, content, {
+        file_path: opts.file || undefined,
+        media_type: opts.mediaType ? parseInt(opts.mediaType) : undefined,
+        cover_image_path: opts.coverImage || undefined,
         is_group: opts.group,
         reminder_all: opts.mentionAll,
-        reminder_user_ids: mentionUserIds,
+        reminder_user_ids: opts.mention || undefined,
         user_token: opts.userToken || undefined,
-        file_path: opts.filePath || undefined,
-        media_type: opts.mediaType ? parseInt(opts.mediaType) : undefined,
+        sender_id: opts.senderId || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -33,20 +36,21 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-markdown")
     .description("Send a markdown/formatted text message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--content <content>", "Markdown content")
+    .argument("<chatId>", "Chat ID")
+    .argument("<content>", "Markdown content")
+    .option("--mention-all", "@all in group", false)
+    .option("--mention <ids...>", "User IDs to @mention")
     .option("-g, --group", "Send as group message", false)
-    .option("--mention-all", "Mention all group members", false)
-    .option("--mention <ids>", "Comma-separated user IDs to mention")
-    .option("--user-token <token>", "User token for user-context sending")
-    .action(async (opts) => {
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, content, opts) => {
       const client = getClient();
-      const mentionUserIds = opts.mention ? commaList(opts.mention) : undefined;
-      const result = await client.sendMarkdown(opts.chatId, opts.content, {
-        is_group: opts.group,
+      const result = await client.sendMarkdown(chatId, content, {
         reminder_all: opts.mentionAll,
-        reminder_user_ids: mentionUserIds,
+        reminder_user_ids: opts.mention || undefined,
+        is_group: opts.group,
         user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -55,19 +59,44 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-file")
     .description("Send a file message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--file-path <path>", "File path to send")
-    .option("--caption <caption>", "Caption text")
-    .option("--media-type <type>", "Media type (1=video,2=image,3=file)")
+    .argument("<chatId>", "Chat ID")
+    .argument("<filePath>", "Local file path")
+    .option("-c, --content <content>", "Content/caption text", "")
+    .option("--media-type <type>", "1=video, 2=image, 3=file")
+    .option("--cover-image <path>", "Cover image path for video attachments", "")
     .option("-g, --group", "Send as group message", false)
-    .option("--user-token <token>", "User token for user-context sending")
-    .action(async (opts) => {
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, filePath, opts) => {
       const client = getClient();
-      const result = await client.sendFile(opts.chatId, opts.filePath, {
-        caption: opts.caption || undefined,
+      const result = await client.sendFile(chatId, filePath, {
+        caption: opts.content || undefined,
         media_type: opts.mediaType ? parseInt(opts.mediaType) : undefined,
+        cover_image_path: opts.coverImage || undefined,
         is_group: opts.group,
         user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("send-image-url")
+    .description("Send an image by URL")
+    .argument("<chatId>", "Chat ID")
+    .argument("<imageUrl>", "Image URL to send")
+    .option("-c, --content <content>", "Content/caption text", "")
+    .option("-g, --group", "Send as group message", false)
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, imageUrl, opts) => {
+      const client = getClient();
+      const result = await client.sendImageUrl(chatId, imageUrl, {
+        caption: opts.content || undefined,
+        is_group: opts.group,
+        user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -76,18 +105,30 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-link-card")
     .description("Send a link card message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--title <title>", "Card title")
-    .requiredOption("--link <link>", "Card link URL")
-    .option("--description <desc>", "Card description")
+    .argument("<chatId>", "Chat ID")
+    .argument("<title>", "Card title")
+    .argument("<link>", "Card link URL")
+    .option("-d, --desc <desc>", "Card description", "")
+    .option("--icon <url>", "Icon URL", "")
+    .option("--pc-link <url>", "PC link URL", "")
+    .option("--pad-link <url>", "Pad link URL", "")
+    .option("--from-name <name>", "Source name", "")
+    .option("--from-icon <url>", "Source icon URL", "")
     .option("-g, --group", "Send as group message", false)
-    .option("--user-token <token>", "User token for user-context sending")
-    .action(async (opts) => {
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, title, link, opts) => {
       const client = getClient();
-      const result = await client.sendLinkCard(opts.chatId, opts.title, opts.link, {
-        description: opts.description || undefined,
+      const result = await client.sendLinkCard(chatId, title, link, {
+        description: opts.desc || undefined,
+        icon_link: opts.icon || undefined,
+        pc_link: opts.pcLink || undefined,
+        pad_link: opts.padLink || undefined,
+        from_name: opts.fromName || undefined,
+        from_icon_link: opts.fromIcon || undefined,
         is_group: opts.group,
         user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -96,16 +137,18 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-app-articles")
     .description("Send app articles message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--articles <json>", "Articles JSON array")
+    .argument("<chatId>", "Chat ID")
+    .argument("<articles...>", "Articles as JSON dicts, e.g. '{\"title\":\"T\",\"url\":\"U\"}'")
     .option("-g, --group", "Send as group message", false)
-    .option("--user-token <token>", "User token for user-context sending")
-    .action(async (opts) => {
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, articles, opts) => {
       const client = getClient();
-      const articles = parseJsonOption(opts.articles);
-      const result = await client.sendAppArticles(opts.chatId, articles, {
+      const parsed = articles.map((a: string) => parseJsonOption(a));
+      const result = await client.sendAppArticles(chatId, parsed, {
         is_group: opts.group,
         user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -114,49 +157,53 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-app-card")
     .description("Send an app card message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--body-title <title>", "Card body title")
-    .option("--head-title <title>", "Card head title")
-    .option("--body-content <content>", "Card body content")
-    .option("--is-dynamic", "Mark as dynamic card", false)
-    .option("--fields <json>", "Card fields JSON array")
-    .option("--links <json>", "Card links JSON array")
+    .argument("<chatId>", "Chat ID")
+    .argument("<bodyTitle>", "Card body title")
+    .option("--head-title <title>", "Card head title", "")
+    .option("--sub-title <sub>", "Card sub title", "")
+    .option("--content <content>", "Card body content (supports div-style HTML)", "")
+    .option("--signature <sig>", "Card signature", "")
+    .option("--card-link <url>", "Card link URL", "")
+    .option("--pc-card-link <url>", "PC card link URL", "")
+    .option("--pad-card-link <url>", "Pad card link URL", "")
+    .option("--dynamic", "Enable dynamic card updates", false)
+    .option("--staff-id <id>", "Staff ID", "")
+    .option("--head-icon <url>", "Head icon URL", "")
+    .option("--status-desc <desc>", "Head status description (div-style HTML, max 30 bytes)", "")
+    .option("--status-colour <colour>", "Head status DOT colour (hex, e.g. #FFB116)", "")
+    .option("--field <json...>", "Card field as JSON key=value")
+    .option("--link <json...>", "Card link as JSON title=url")
     .option("-g, --group", "Send as group message", false)
-    .option("--user-token <token>", "User token for user-context sending")
-    .action(async (opts) => {
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, bodyTitle, opts) => {
       const client = getClient();
-      const fields = opts.fields ? parseJsonOption(opts.fields) : undefined;
-      const links = opts.links ? parseJsonOption(opts.links) : undefined;
-      const result = await client.sendAppCard(opts.chatId, opts.bodyTitle, {
+      let headStatusInfo = undefined;
+      if (opts.statusDesc || opts.statusColour) {
+        headStatusInfo = {
+          description: opts.statusDesc || "",
+          colour: opts.statusColour || "",
+        };
+      }
+      const parsedFields = opts.field ? opts.field.map((f: string) => parseJsonOption(f)) : undefined;
+      const parsedLinks = opts.link ? opts.link.map((l: string) => parseJsonOption(l)) : undefined;
+      const result = await client.sendAppCard(chatId, bodyTitle, {
         head_title: opts.headTitle || undefined,
-        body_content: opts.bodyContent || undefined,
-        is_dynamic: opts.isDynamic,
-        fields,
-        links,
+        body_sub_title: opts.subTitle || undefined,
+        body_content: opts.content || undefined,
+        signature: opts.signature || undefined,
+        card_link: opts.cardLink || undefined,
+        pc_card_link: opts.pcCardLink || undefined,
+        pad_card_link: opts.padCardLink || undefined,
+        is_dynamic: opts.dynamic,
+        staff_id: opts.staffId || undefined,
+        head_icon_url: opts.headIcon || undefined,
+        head_status_info: headStatusInfo,
+        fields: parsedFields,
+        links: parsedLinks,
         is_group: opts.group,
         user_token: opts.userToken || undefined,
-      });
-      checkError(result);
-      outputResult(result);
-    });
-
-  cmd
-    .command("send-oacard")
-    .description("Send an OA card message")
-    .requiredOption("-c, --chat-id <chatId>", "Chat ID (receiver)")
-    .requiredOption("--title <title>", "OA card title")
-    .option("--fields <json>", "OA card fields JSON array")
-    .option("--link <link>", "OA card link URL")
-    .option("-g, --group", "Send as group message", false)
-    .option("--user-token <token>", "User token for user-context sending")
-    .action(async (opts) => {
-      const client = getClient();
-      const fields = opts.fields ? parseJsonOption(opts.fields) : undefined;
-      const result = await client.sendOacard(opts.chatId, opts.title, {
-        fields,
-        link: opts.link || undefined,
-        is_group: opts.group,
-        user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -165,18 +212,25 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("update-dynamic-card")
     .description("Update a dynamic card message")
-    .requiredOption("--msg-id <msgId>", "Message ID of the dynamic card")
-    .option("--is-last-update", "Mark as last update", false)
-    .option("--head-status-info <json>", "Head status info JSON")
-    .option("--links <json>", "Updated links JSON array")
-    .action(async (opts) => {
+    .argument("<msgId>", "Message ID of the dynamic card")
+    .option("--last", "Mark as last update", false)
+    .option("--status-desc <desc>", "New status description (div-style HTML, max 30 bytes)", "")
+    .option("--status-colour <colour>", "New status DOT colour (hex)", "")
+    .option("--link <json...>", "Updated link as JSON title=url")
+    .action(async (msgId, opts) => {
       const client = getClient();
-      const headStatusInfo = opts.headStatusInfo ? parseJsonOption(opts.headStatusInfo) : undefined;
-      const links = opts.links ? parseJsonOption(opts.links) : undefined;
-      const result = await client.updateDynamicCard(opts.msgId, {
-        is_last_update: opts.isLastUpdate,
+      let headStatusInfo = undefined;
+      if (opts.statusDesc || opts.statusColour) {
+        headStatusInfo = {
+          description: opts.statusDesc || "",
+          colour: opts.statusColour || "",
+        };
+      }
+      const parsedLinks = opts.link ? opts.link.map((l: string) => parseJsonOption(l)) : undefined;
+      const result = await client.updateDynamicCard(msgId, {
+        is_last_update: opts.last,
         head_status_info: headStatusInfo,
-        links,
+        links: parsedLinks,
       });
       checkError(result);
       outputResult(result);
@@ -185,11 +239,116 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("revoke")
     .description("Revoke messages by IDs")
-    .requiredOption("--message-ids <ids>", "Comma-separated message IDs to revoke")
+    .argument("<messageIds...>", "Message IDs to revoke")
+    .option("--chat-type <type>", "staff, group, notification, account, or bot", "bot")
+    .option("--sender-id <senderId>", "Sender staff ID (required for staff/group)", "")
+    .action(async (messageIds, opts) => {
+      const client = getClient();
+      const result = await client.revokeMessage(messageIds, {
+        chat_type: opts.chatType,
+        sender_id: opts.senderId || undefined,
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("send-bot-message")
+    .description("Send a bot notification message")
+    .argument("<msgType>", "Message type")
+    .argument("<msgData>", "Message data as JSON")
+    .option("--chat-id <ids...>", "Chat IDs (or group IDs if --group)")
+    .option("--dept <ids...>", "Department IDs (bot channel only)")
+    .option("--user-token <token>", "User token", "")
+    .option("--entry-id <entryId>", "App entry selector", "")
+    .option("-g, --group", "Send to groups instead of users", false)
+    .action(async (msgType, msgData, opts) => {
+      const client = getClient();
+      const parsedData = parseJsonOption(msgData);
+      const result = await client.sendBotMessage(msgType, parsedData, opts.chatId || undefined, opts.dept || undefined, {
+        user_token: opts.userToken || undefined,
+        entry_id: opts.entryId || undefined,
+        is_group: opts.group,
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("send-group-message")
+    .description("Send a group message")
+    .argument("<groupId>", "Group ID")
+    .argument("<msgType>", "Message type")
+    .argument("<msgData>", "Message data as JSON")
+    .option("--user-token <token>", "User token", "")
+    .option("--sender-id <senderId>", "Sender staff ID", "")
+    .option("--mention-all", "@all (text/formatText only)", false)
+    .option("--mention <ids...>", "User IDs to @mention (text/formatText only)")
+    .option("--outlines <outlines>", "Group notification digest", "")
+    .option("--entry-id <entryId>", "App entry selector", "")
+    .action(async (groupId, msgType, msgData, opts) => {
+      const client = getClient();
+      const parsedData = parseJsonOption(msgData);
+      const result = await client.sendGroupMessage(groupId, msgType, parsedData, {
+        user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
+        reminder_all: opts.mentionAll,
+        reminder_user_ids: opts.mention || undefined,
+        outlines: opts.outlines || undefined,
+        entry_id: opts.entryId || undefined,
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("query-groups")
+    .description("Query group IDs with pagination")
+    .option("-p, --page <page>", "Page offset", "1")
+    .option("-s, --size <size>", "Page size", "100")
     .action(async (opts) => {
       const client = getClient();
-      const messageIds = commaList(opts.messageIds);
-      const result = await client.revokeMessage(messageIds);
+      const result = await client.queryGroups({
+        page_offset: parseInt(opts.page),
+        page_size: parseInt(opts.size),
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("send-oacard")
+    .description("Send an OA card message")
+    .argument("<chatId>", "Chat ID")
+    .argument("<title>", "OA card title")
+    .option("--head <head>", "OA card head title", "")
+    .option("--sub-title <sub>", "OA card sub title", "")
+    .option("--staff-id <id>", "Staff ID", "")
+    .option("--field <json...>", "Card field as JSON, e.g. '{\"key\":\"k\",\"value\":\"v\"}'")
+    .option("--link <url>", "Card click link URL", "")
+    .option("--pc-link <url>", "PC link URL", "")
+    .option("--pad-link <url>", "Pad link URL", "")
+    .option("--card-action <json>", "Card action as JSON dict")
+    .option("-g, --group", "Send as group message", false)
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (chatId, title, opts) => {
+      const client = getClient();
+      const parsedFields = opts.field ? opts.field.map((f: string) => parseJsonOption(f)) : undefined;
+      const parsedAction = opts.cardAction ? parseJsonOption(opts.cardAction) : undefined;
+      const result = await client.sendOacard(chatId, title, {
+        head: opts.head || undefined,
+        sub_title: opts.subTitle || undefined,
+        staff_id: opts.staffId || undefined,
+        fields: parsedFields,
+        link: opts.link || undefined,
+        pc_link: opts.pcLink || undefined,
+        pad_link: opts.padLink || undefined,
+        card_action: parsedAction,
+        is_group: opts.group,
+        user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
+      });
       checkError(result);
       outputResult(result);
     });
@@ -197,19 +356,21 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-account-message")
     .description("Send a public account message")
-    .requiredOption("--msg-type <msgType>", "Message type")
-    .requiredOption("--msg-data <json>", "Message data JSON")
-    .requiredOption("--chat-ids <ids>", "Comma-separated chat IDs")
-    .option("--dept-ids <ids>", "Comma-separated department IDs")
-    .option("--account-id <id>", "Account ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<msgType>", "Message type")
+    .argument("<msgData>", "Message data as JSON")
+    .option("--chat-id <ids...>", "Chat IDs")
+    .option("--dept <ids...>", "Department IDs")
+    .option("--account-id <id>", "Account ID", "")
+    .option("--entry-id <entryId>", "App entry selector", "")
+    .option("--attach <attach>", "Attach info", "")
+    .option("--user-token <token>", "User token", "")
+    .action(async (msgType, msgData, opts) => {
       const client = getClient();
-      const msgData = parseJsonOption(opts.msgData);
-      const chatIds = commaList(opts.chatIds);
-      const deptIds = opts.deptIds ? commaList(opts.deptIds) : undefined;
-      const result = await client.sendAccountMessage(opts.msgType, msgData, chatIds, deptIds, {
+      const parsedData = parseJsonOption(msgData);
+      const result = await client.sendAccountMessage(msgType, parsedData, opts.chatId || undefined, opts.dept || undefined, {
         account_id: opts.accountId || undefined,
+        entry_id: opts.entryId || undefined,
+        attach: opts.attach || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -219,32 +380,20 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-user-message")
     .description("Send a user-to-user private message")
-    .requiredOption("--receiver-id <receiverId>", "Receiver staff ID")
-    .requiredOption("--msg-type <msgType>", "Message type")
-    .requiredOption("--msg-data <json>", "Message data JSON")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<receiverId>", "Receiver user ID")
+    .argument("<msgType>", "Message type")
+    .argument("<msgData>", "Message data as JSON")
+    .option("--user-token <token>", "User token", "")
+    .option("--common <json>", "Common data as JSON dict")
+    .option("--uuid <uuid>", "Deduplication UUID", "")
+    .action(async (receiverId, msgType, msgData, opts) => {
       const client = getClient();
-      const msgData = parseJsonOption(opts.msgData);
-      const result = await client.sendUserMessage(opts.receiverId, opts.msgType, msgData, {
+      const parsedData = parseJsonOption(msgData);
+      const parsedCommon = opts.common ? parseJsonOption(opts.common) : undefined;
+      const result = await client.sendUserMessage(receiverId, msgType, parsedData, {
         user_token: opts.userToken || undefined,
-      });
-      checkError(result);
-      outputResult(result);
-    });
-
-  cmd
-    .command("send-group-message")
-    .description("Send a group message")
-    .requiredOption("--group-id <groupId>", "Group ID")
-    .requiredOption("--msg-type <msgType>", "Message type")
-    .requiredOption("--msg-data <json>", "Message data JSON")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
-      const client = getClient();
-      const msgData = parseJsonOption(opts.msgData);
-      const result = await client.sendGroupMessage(opts.groupId, opts.msgType, msgData, {
-        user_token: opts.userToken || undefined,
+        common: parsedCommon,
+        uuid: opts.uuid || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -253,14 +402,14 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("send-reminder")
     .description("Send a reminder for a message")
-    .requiredOption("--msg-id <msgId>", "Message ID")
-    .requiredOption("--reminder-types <types>", "Comma-separated reminder types (0=none,1=popup,2=sms,3=phone)")
-    .requiredOption("--user-ids <ids>", "Comma-separated user IDs to remind")
-    .action(async (opts) => {
+    .argument("<msgId>", "Message ID to remind about")
+    .option("-t, --type <types...>", "Reminder types: 1=popup, 2=SMS, 3=phone call")
+    .option("-u, --user <ids...>", "User IDs (staff openIds) to remind")
+    .action(async (msgId, opts) => {
       const client = getClient();
-      const reminderTypes = commaList(opts.reminderTypes).map(Number);
-      const userIdList = commaList(opts.userIds);
-      const result = await client.sendReminderMsg(opts.msgId, reminderTypes, userIdList);
+      const reminderTypes = opts.type ? opts.type.map(Number) : [];
+      const userIdList = opts.user || [];
+      const result = await client.sendReminderMsg(msgId, reminderTypes, userIdList);
       checkError(result);
       outputResult(result);
     });

@@ -18,7 +18,7 @@ import { registerHealthCommands } from "./commands/health";
 const program = new Command();
 
 program
-  .name("lansenger-ts")
+  .name("lansenger")
   .description("CLI for Lansenger (蓝信) — send messages, manage groups, staff, departments, calendars, todos, and more")
   .version("1.0.0")
   .option("-j, --json", "Output as JSON", false)

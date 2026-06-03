@@ -1,5 +1,7 @@
 import { Command } from "commander";
-import { getStore, outputResult, checkError } from "../utils";
+import { getStore, outputResult, activeProfile } from "../utils";
+
+const VALID_KEYS = ["app_id", "app_secret", "api_gateway_url", "passport_url", "encoding_key", "callback_token"];
 
 export function registerConfigCommands(program: Command) {
   const cmd = program.command("config").description("Manage CLI configuration and credentials");
@@ -7,22 +9,35 @@ export function registerConfigCommands(program: Command) {
   cmd
     .command("set")
     .description("Set credentials (app_id, app_secret, api_gateway_url, passport_url, encoding_key, callback_token)")
-    .requiredOption("--app-id <appId>", "App ID")
-    .requiredOption("--app-secret <appSecret>", "App Secret")
-    .option("--api-gateway-url <url>", "API Gateway URL")
-    .option("--passport-url <url>", "Passport URL")
-    .option("--encoding-key <key>", "Encoding AES key")
-    .option("--callback-token <token>", "Callback verification token")
-    .action(async (opts) => {
+    .argument("<key>", `Config key: ${VALID_KEYS.join(", ")}`)
+    .argument("<value>", "Config value")
+    .option("-P, --profile <profile>", "Profile name (overrides global --profile)")
+    .action((key, value, opts) => {
+      if (!VALID_KEYS.includes(key)) {
+        console.error(`Error: Invalid key '${key}'. Valid keys: ${VALID_KEYS.join(", ")}`);
+        process.exit(1);
+      }
+      const p = opts.profile || activeProfile;
       const store = getStore();
-      store.saveCredentials(opts.appId, opts.appSecret, opts.apiGatewayUrl || "", opts.passportUrl || "", opts.encodingKey || "", opts.callbackToken || "");
-      outputResult({ success: true, message: "Credentials saved", profile: store.currentProfile });
+      const creds = store.loadCredentials();
+      creds[key] = value;
+      store.saveCredentials(
+        creds.app_id || "",
+        creds.app_secret || "",
+        creds.api_gateway_url || "",
+        creds.passport_url || "",
+        creds.encoding_key || "",
+        creds.callback_token || "",
+      );
+      outputResult({ success: true, message: `Set ${key} = ${value}`, profile: p });
     });
 
   cmd
     .command("show")
     .description("Show current configuration")
-    .action(async () => {
+    .option("-P, --profile <profile>", "Profile name (overrides global --profile)")
+    .action((opts) => {
+      const p = opts.profile || activeProfile;
       const store = getStore();
       const creds = store.loadCredentials();
       const masked = {
@@ -32,7 +47,7 @@ export function registerConfigCommands(program: Command) {
         passport_url: creds.passport_url,
         encoding_key: creds.encoding_key ? "(set)" : "(not set)",
         callback_token: creds.callback_token ? "(set)" : "(not set)",
-        profile: store.currentProfile,
+        profile: p,
         has_full_config: store.hasFullConfig(),
       };
       outputResult(masked);
@@ -41,16 +56,25 @@ export function registerConfigCommands(program: Command) {
   cmd
     .command("clear")
     .description("Clear stored credentials for current profile")
-    .action(async () => {
+    .option("-P, --profile <profile>", "Profile name (overrides global --profile)")
+    .option("--all", "Delete entire state file (all profiles)", false)
+    .action((opts) => {
+      if (opts.all) {
+        const store = getStore();
+        store.clear();
+        outputResult({ success: true, message: "Cleared entire state file (all profiles)." });
+        return;
+      }
+      const p = opts.profile || activeProfile;
       const store = getStore();
       store.clearProfile();
-      outputResult({ success: true, message: "Credentials cleared for profile: " + store.currentProfile });
+      outputResult({ success: true, message: `Cleared profile '${p}'.` });
     });
 
   cmd
     .command("list-profiles")
     .description("List all stored credential profiles")
-    .action(async () => {
+    .action(() => {
       const store = getStore();
       const profiles = store.listProfiles();
       const active = store.getActiveProfile();

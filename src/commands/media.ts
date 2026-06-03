@@ -2,17 +2,39 @@ import { Command } from "commander";
 import { getClient, outputResult, checkError } from "../utils";
 
 export function registerMediaCommands(program: Command) {
-  const cmd = program.command("media").description("Upload, download, and manage media files");
+  const cmd = program.command("media").description("Upload and download media files");
 
   cmd
     .command("upload")
     .description("Upload a media file")
-    .requiredOption("--file-path <path>", "File path to upload")
-    .option("--media-type <type>", "Media type (1=video,2=image,3=file)")
-    .action(async (opts) => {
+    .argument("<filePath>", "Local file path to upload")
+    .option("-t, --media-type <type>", "1=video, 2=image, 3=file (4.5.1 core service)", "3")
+    .option("--user-token <token>", "User token (optional for 4.5.1)", "")
+    .action(async (filePath, opts) => {
       const client = getClient();
-      const result = await client.uploadMediaFile(opts.filePath, {
-        media_type: opts.mediaType ? parseInt(opts.mediaType) : undefined,
+      const result = await client.uploadMediaFile(filePath, {
+        media_type: parseInt(opts.mediaType),
+        user_token: opts.userToken || undefined,
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("upload-app")
+    .description("Upload media for app/bot usage (4.5.4 API)")
+    .argument("<filePath>", "Local file path to upload")
+    .option("-t, --media-type <type>", "file, video, image, audio (4.5.4 app/bot)", "file")
+    .option("--width <width>", "Width for video/image", "0")
+    .option("--height <height>", "Height for video/image", "0")
+    .option("--duration <duration>", "Duration in seconds for video/audio", "0")
+    .action(async (filePath, opts) => {
+      const client = getClient();
+      const result = await client.uploadAppMediaFile(filePath, {
+        media_type: opts.mediaType,
+        width: parseInt(opts.width) || undefined,
+        height: parseInt(opts.height) || undefined,
+        duration: parseInt(opts.duration) || undefined,
       });
       checkError(result);
       outputResult(result);
@@ -21,10 +43,10 @@ export function registerMediaCommands(program: Command) {
   cmd
     .command("download")
     .description("Download a media file (to stdout as binary)")
-    .requiredOption("--media-id <mediaId>", "Media ID")
-    .action(async (opts) => {
+    .argument("<mediaId>", "Media ID to download")
+    .action(async (mediaId) => {
       const client = getClient();
-      const result = await client.downloadMediaFile(opts.mediaId);
+      const result = await client.downloadMediaFile(mediaId);
       checkError(result);
       if (result.success && result.data) {
         process.stdout.write(result.data);
@@ -36,12 +58,14 @@ export function registerMediaCommands(program: Command) {
   cmd
     .command("download-to-file")
     .description("Download a media file to a local file")
-    .requiredOption("--media-id <mediaId>", "Media ID")
-    .option("--target-path <path>", "Target file path")
-    .action(async (opts) => {
+    .argument("<mediaId>", "Media ID to download")
+    .option("-o, --output <path>", "Target file path", "")
+    .option("--media-type <type>", "file, image, or video", "file")
+    .action(async (mediaId, opts) => {
       const client = getClient();
-      const savedPath = await client.downloadMediaToFile(opts.mediaId, {
-        target_path: opts.targetPath || undefined,
+      const savedPath = await client.downloadMediaToFile(mediaId, {
+        target_path: opts.output || undefined,
+        media_type: opts.mediaType,
       });
       outputResult({ success: true, path: savedPath });
     });
@@ -49,11 +73,11 @@ export function registerMediaCommands(program: Command) {
   cmd
     .command("path")
     .description("Fetch media path info")
-    .requiredOption("--media-id <mediaId>", "Media ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<mediaId>", "Media ID to get path for")
+    .option("--user-token <token>", "User token", "")
+    .action(async (mediaId, opts) => {
       const client = getClient();
-      const result = await client.fetchMediaPathInfo(opts.mediaId, { user_token: opts.userToken || undefined });
+      const result = await client.fetchMediaPathInfo(mediaId, { user_token: opts.userToken || undefined });
       checkError(result);
       outputResult(result);
     });

@@ -2,17 +2,17 @@ import { Command } from "commander";
 import { getClient, outputResult, checkError } from "../utils";
 
 export function registerStreamingCommands(program: Command) {
-  const cmd = program.command("streaming").description("Manage stream messages (AI Agent real-time push)");
+  const cmd = program.command("streaming").description("Streaming message operations (for AI agent progressive output)");
 
   cmd
     .command("create")
     .description("Create a stream message session")
-    .requiredOption("--receiver-id <receiverId>", "Receiver ID")
-    .requiredOption("--receiver-type <receiverType>", "Receiver type (e.g. staff, group)")
-    .requiredOption("--stream-id <streamId>", "Stream session ID")
-    .action(async (opts) => {
+    .argument("<receiverId>", "Receiver ID")
+    .argument("<receiverType>", "Receiver type: single or group")
+    .argument("<streamId>", "Stream ID (unique per session)")
+    .action(async (receiverId, receiverType, streamId) => {
       const client = getClient();
-      const result = await client.createStreamMessage(opts.receiverId, opts.receiverType, opts.streamId);
+      const result = await client.createStreamMessage(receiverId, receiverType, streamId);
       checkError(result);
       outputResult(result);
     });
@@ -20,10 +20,10 @@ export function registerStreamingCommands(program: Command) {
   cmd
     .command("fetch")
     .description("Fetch stream message status")
-    .requiredOption("--msg-id <msgId>", "Stream message ID")
-    .action(async (opts) => {
+    .argument("<msgId>", "Message ID of the stream message")
+    .action(async (msgId) => {
       const client = getClient();
-      const result = await client.fetchStreamMessage(opts.msgId);
+      const result = await client.fetchStreamMessage(msgId);
       checkError(result);
       outputResult(result);
     });

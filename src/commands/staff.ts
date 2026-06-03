@@ -1,17 +1,17 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError } from "../utils";
+import { getClient, outputResult, checkError, commaList } from "../utils";
 
 export function registerStaffCommands(program: Command) {
-  const cmd = program.command("staff").description("Query staff/employee information");
+  const cmd = program.command("staff").description("Query staff/contacts information");
 
   cmd
     .command("basic-info")
     .description("Fetch basic staff info")
-    .requiredOption("--staff-id <staffId>", "Staff ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<staffId>", "Staff ID")
+    .option("--user-token <token>", "User token", "")
+    .action(async (staffId, opts) => {
       const client = getClient();
-      const result = await client.fetchStaffBasicInfo(opts.staffId, { user_token: opts.userToken || undefined });
+      const result = await client.fetchStaffBasicInfo(staffId, { user_token: opts.userToken || undefined });
       checkError(result);
       outputResult(result);
     });
@@ -19,11 +19,11 @@ export function registerStaffCommands(program: Command) {
   cmd
     .command("detail")
     .description("Fetch detailed staff info")
-    .requiredOption("--staff-id <staffId>", "Staff ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<staffId>", "Staff ID")
+    .option("--user-token <token>", "User token", "")
+    .action(async (staffId, opts) => {
       const client = getClient();
-      const result = await client.fetchStaffDetail(opts.staffId, { user_token: opts.userToken || undefined });
+      const result = await client.fetchStaffDetail(staffId, { user_token: opts.userToken || undefined });
       checkError(result);
       outputResult(result);
     });
@@ -31,11 +31,11 @@ export function registerStaffCommands(program: Command) {
   cmd
     .command("ancestors")
     .description("Fetch department ancestors for a staff member")
-    .requiredOption("--staff-id <staffId>", "Staff ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<staffId>", "Staff ID")
+    .option("--user-token <token>", "User token", "")
+    .action(async (staffId, opts) => {
       const client = getClient();
-      const result = await client.fetchDepartmentAncestors(opts.staffId, { user_token: opts.userToken || undefined });
+      const result = await client.fetchDepartmentAncestors(staffId, { user_token: opts.userToken || undefined });
       checkError(result);
       outputResult(result);
     });
@@ -43,37 +43,13 @@ export function registerStaffCommands(program: Command) {
   cmd
     .command("id-mapping")
     .description("Map an ID (phone/email/etc.) to a staff ID")
-    .requiredOption("--org-id <orgId>", "Organization ID")
-    .requiredOption("--id-type <idType>", "ID type (e.g. mobile_phone, email)")
-    .requiredOption("--id-value <idValue>", "ID value to look up")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<orgId>", "Organization ID")
+    .argument("<idType>", "ID type: phone, email, login_name, external_id")
+    .argument("<idValue>", "ID value to map")
+    .option("--user-token <token>", "User token", "")
+    .action(async (orgId, idType, idValue, opts) => {
       const client = getClient();
-      const result = await client.fetchStaffIdMapping(opts.orgId, opts.idType, opts.idValue, { user_token: opts.userToken || undefined });
-      checkError(result);
-      outputResult(result);
-    });
-
-  cmd
-    .command("search")
-    .description("Search staff by keyword")
-    .requiredOption("--keyword <keyword>", "Search keyword")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
-      const client = getClient();
-      const result = await client.searchStaff(opts.keyword, { user_token: opts.userToken || undefined });
-      checkError(result);
-      outputResult(result);
-    });
-
-  cmd
-    .command("org-info")
-    .description("Fetch organization info")
-    .requiredOption("--org-id <orgId>", "Organization ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
-      const client = getClient();
-      const result = await client.fetchOrgInfo(opts.orgId, { user_token: opts.userToken || undefined });
+      const result = await client.fetchStaffIdMapping(orgId, idType, idValue, { user_token: opts.userToken || undefined });
       checkError(result);
       outputResult(result);
     });
@@ -81,11 +57,53 @@ export function registerStaffCommands(program: Command) {
   cmd
     .command("org-extra-fields")
     .description("Fetch organization extra field IDs")
-    .requiredOption("--org-id <orgId>", "Organization ID")
-    .option("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<orgId>", "Organization ID")
+    .option("--user-token <token>", "User token", "")
+    .option("-p, --page <page>", "Page number", "1")
+    .option("-s, --size <size>", "Page size", "1000")
+    .action(async (orgId, opts) => {
       const client = getClient();
-      const result = await client.fetchOrgExtraFieldIds(opts.orgId, { user_token: opts.userToken || undefined });
+      const result = await client.fetchOrgExtraFieldIds(orgId, {
+        user_token: opts.userToken || undefined,
+        page: parseInt(opts.page),
+        page_size: parseInt(opts.size),
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("search")
+    .description("Search staff by keyword")
+    .argument("<keyword>", "Search keyword")
+    .option("--user-token <token>", "User token", "")
+    .option("--user-id <userId>", "User ID context", "")
+    .option("--recursive/--no-recursive", "Recursive search", true)
+    .option("--sector <ids...>", "Sector IDs")
+    .option("-p, --page <page>", "Page number")
+    .option("-s, --size <size>", "Page size")
+    .action(async (keyword, opts) => {
+      const client = getClient();
+      const result = await client.searchStaff(keyword, {
+        user_token: opts.userToken || undefined,
+        user_id: opts.userId || undefined,
+        recursive: opts.recursive,
+        sector_ids: opts.sector || undefined,
+        page: opts.page ? parseInt(opts.page) : undefined,
+        page_size: opts.size ? parseInt(opts.size) : undefined,
+      });
+      checkError(result);
+      outputResult(result);
+    });
+
+  cmd
+    .command("org-info")
+    .description("Fetch organization info")
+    .argument("<orgId>", "Organization ID")
+    .option("--user-token <token>", "User token", "")
+    .action(async (orgId, opts) => {
+      const client = getClient();
+      const result = await client.fetchOrgInfo(orgId, { user_token: opts.userToken || undefined });
       checkError(result);
       outputResult(result);
     });

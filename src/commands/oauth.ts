@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { LansengerClient } from "lansenger-sdk-ts";
 import { getClient, outputResult, checkError, getStore } from "../utils";
 
 export function registerOauthCommands(program: Command) {
@@ -7,12 +8,12 @@ export function registerOauthCommands(program: Command) {
   cmd
     .command("authorize-url")
     .description("Build an OAuth2 authorize URL")
-    .requiredOption("--redirect-uri <uri>", "Redirect URI")
-    .option("--scope <scope>", "OAuth2 scope")
-    .option("--state <state>", "State parameter for CSRF protection")
-    .action(async (opts) => {
+    .argument("<redirectUri>", "Redirect URI after auth")
+    .option("-s, --scope <scope>", "OAuth2 scope", "basic_userinfor")
+    .option("--state <state>", "State parameter for CSRF protection", "")
+    .action(async (redirectUri, opts) => {
       const client = getClient();
-      const url = client.buildAuthorizeUrl(opts.redirectUri, {
+      const url = client.buildAuthorizeUrl(redirectUri, {
         scope: opts.scope || undefined,
         state: opts.state || undefined,
       });
@@ -22,11 +23,11 @@ export function registerOauthCommands(program: Command) {
   cmd
     .command("exchange-code")
     .description("Exchange an authorization code for a user token")
-    .requiredOption("--code <code>", "Authorization code")
-    .option("--redirect-uri <uri>", "Redirect URI (must match authorize call)")
-    .action(async (opts) => {
+    .argument("<code>", "Authorization code from callback")
+    .option("--redirect-uri <uri>", "Redirect URI used in authorize", "")
+    .action(async (code, opts) => {
       const client = getClient();
-      const result = await client.exchangeCode(opts.code, {
+      const result = await client.exchangeCode(code, {
         redirect_uri: opts.redirectUri || undefined,
       });
       checkError(result);
@@ -40,10 +41,13 @@ export function registerOauthCommands(program: Command) {
   cmd
     .command("refresh-token")
     .description("Refresh a user token")
-    .requiredOption("--refresh-token <token>", "Refresh token")
-    .action(async (opts) => {
+    .argument("<refreshToken>", "Refresh token")
+    .option("-s, --scope <scope>", "Scope", "")
+    .action(async (refreshToken, opts) => {
       const client = getClient();
-      const result = await client.refreshUserToken(opts.refreshToken);
+      const result = await client.refreshUserToken(refreshToken, {
+        scope: opts.scope || undefined,
+      });
       checkError(result);
       if (result.success && result.user_token) {
         const store = getStore();
@@ -55,11 +59,30 @@ export function registerOauthCommands(program: Command) {
   cmd
     .command("user-info")
     .description("Fetch user info using a user token")
-    .requiredOption("--user-token <token>", "User token")
-    .action(async (opts) => {
+    .argument("<userToken>", "User token")
+    .action(async (userToken) => {
       const client = getClient();
-      const result = await client.fetchUserInfoByToken(opts.userToken);
+      const result = await client.fetchUserInfoByToken(userToken);
       checkError(result);
       outputResult(result);
+    });
+
+  cmd
+    .command("parse-callback")
+    .description("Parse the query string from an OAuth2 callback URL")
+    .argument("<queryString>", "Query string from callback URL")
+    .action(async (queryString) => {
+      const params = LansengerClient.parseAuthorizeCallback(queryString);
+      outputResult(params);
+    });
+
+  cmd
+    .command("validate-state")
+    .description("Validate the state parameter from an OAuth2 callback")
+    .argument("<callbackState>", "State from callback")
+    .argument("<expectedState>", "Expected state you set")
+    .action(async (callbackState, expectedState) => {
+      const valid = LansengerClient.validateCallbackState(callbackState, expectedState);
+      outputResult({ valid });
     });
 }
