@@ -12,8 +12,8 @@ export function registerGroupCommands(program: Command) {
     .option("--owner <ownerId>", "Owner staff ID", "")
     .option("-d, --desc <desc>", "Group description", "")
     .option("--avatar <avatarId>", "Avatar ID", "")
-    .option("--staff <ids...>", "Staff IDs to add")
-    .option("--dept <ids...>", "Department IDs to add")
+    .option("--staff <ids...>", "Staff IDs to add, space-separated")
+    .option("--dept <ids...>", "Department IDs to add, space-separated")
     .option("--user-token <token>", "User token", "")
     .action(async (name, orgId, opts) => {
       const client = getClient();
@@ -116,9 +116,9 @@ export function registerGroupCommands(program: Command) {
     .command("update-members")
     .description("Add or remove group members")
     .argument("<groupId>", "Group ID")
-    .option("--add <ids...>", "Staff IDs to add")
-    .option("--remove <ids...>", "Staff IDs to remove")
-    .option("--add-dept <ids...>", "Department IDs to add")
+    .option("--add <ids...>", "Staff IDs to add, space-separated")
+    .option("--remove <ids...>", "Staff IDs to remove, space-separated")
+    .option("--add-dept <ids...>", "Department IDs to add, space-separated")
     .option("--user-token <token>", "User token", "")
     .action(async (groupId, opts) => {
       const client = getClient();

@@ -14,7 +14,7 @@ export function registerMessageCommands(program: Command) {
     .option("--cover-image <path>", "Cover image path for video attachments", "")
     .option("-g, --group", "Send as group message", false)
     .option("--mention-all", "@all in group", false)
-    .option("--mention <ids...>", "User IDs to @mention")
+    .option("--mention <ids...>", "User IDs to @mention (space-separated, e.g. --mention id1 id2)")
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
     .action(async (chatId, content, opts) => {
@@ -39,7 +39,7 @@ export function registerMessageCommands(program: Command) {
     .argument("<chatId>", "Chat ID")
     .argument("<content>", "Markdown content")
     .option("--mention-all", "@all in group", false)
-    .option("--mention <ids...>", "User IDs to @mention")
+    .option("--mention <ids...>", "User IDs to @mention (space-separated, e.g. --mention id1 id2)")
     .option("-g, --group", "Send as group message", false)
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
@@ -171,8 +171,8 @@ export function registerMessageCommands(program: Command) {
     .option("--head-icon <url>", "Head icon URL", "")
     .option("--status-desc <desc>", "Head status description (div-style HTML, max 30 bytes)", "")
     .option("--status-colour <colour>", "Head status DOT colour (hex, e.g. #FFB116)", "")
-    .option("--field <json...>", "Card field as JSON key=value")
-    .option("--link <json...>", "Card link as JSON title=url")
+    .option("--field <json...>", "Card field as JSON, space-separated, e.g. --field '{\"key\":\"k\",\"value\":\"v\"}' '{\"key\":\"k2\",\"value\":\"v2\"}'")
+    .option("--link <json...>", "Card link as JSON, space-separated, e.g. --link '{\"title\":\"T\",\"url\":\"U\"}' '{\"title\":\"T2\",\"url\":\"U2\"}'")
     .option("-g, --group", "Send as group message", false)
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
@@ -216,7 +216,7 @@ export function registerMessageCommands(program: Command) {
     .option("--last", "Mark as last update", false)
     .option("--status-desc <desc>", "New status description (div-style HTML, max 30 bytes)", "")
     .option("--status-colour <colour>", "New status DOT colour (hex)", "")
-    .option("--link <json...>", "Updated link as JSON title=url")
+    .option("--link <json...>", "Updated link as JSON, space-separated")
     .action(async (msgId, opts) => {
       const client = getClient();
       let headStatusInfo = undefined;
@@ -257,8 +257,8 @@ export function registerMessageCommands(program: Command) {
     .description("Send a bot notification message")
     .argument("<msgType>", "Message type")
     .argument("<msgData>", "Message data as JSON")
-    .option("--chat-id <ids...>", "Chat IDs (or group IDs if --group)")
-    .option("--dept <ids...>", "Department IDs (bot channel only)")
+    .option("--chat-id <ids...>", "Chat IDs, space-separated (or group IDs if --group)")
+    .option("--dept <ids...>", "Department IDs, space-separated (bot channel only)")
     .option("--user-token <token>", "User token", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .option("-g, --group", "Send to groups instead of users", false)
@@ -283,7 +283,7 @@ export function registerMessageCommands(program: Command) {
     .option("--user-token <token>", "User token", "")
     .option("--sender-id <senderId>", "Sender staff ID", "")
     .option("--mention-all", "@all (text/formatText only)", false)
-    .option("--mention <ids...>", "User IDs to @mention (text/formatText only)")
+    .option("--mention <ids...>", "User IDs to @mention, space-separated (text/formatText only)")
     .option("--outlines <outlines>", "Group notification digest", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .action(async (groupId, msgType, msgData, opts) => {
@@ -324,7 +324,7 @@ export function registerMessageCommands(program: Command) {
     .option("--head <head>", "OA card head title", "")
     .option("--sub-title <sub>", "OA card sub title", "")
     .option("--staff-id <id>", "Staff ID", "")
-    .option("--field <json...>", "Card field as JSON, e.g. '{\"key\":\"k\",\"value\":\"v\"}'")
+    .option("--field <json...>", "Card field as JSON, space-separated, e.g. --field '{\"key\":\"k\",\"value\":\"v\"}'")
     .option("--link <url>", "Card click link URL", "")
     .option("--pc-link <url>", "PC link URL", "")
     .option("--pad-link <url>", "Pad link URL", "")
@@ -358,8 +358,8 @@ export function registerMessageCommands(program: Command) {
     .description("Send a public account message")
     .argument("<msgType>", "Message type")
     .argument("<msgData>", "Message data as JSON")
-    .option("--chat-id <ids...>", "Chat IDs")
-    .option("--dept <ids...>", "Department IDs")
+    .option("--chat-id <ids...>", "Chat IDs, space-separated")
+    .option("--dept <ids...>", "Department IDs, space-separated")
     .option("--account-id <id>", "Account ID", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .option("--attach <attach>", "Attach info", "")
@@ -403,8 +403,8 @@ export function registerMessageCommands(program: Command) {
     .command("send-reminder")
     .description("Send a reminder for a message")
     .argument("<msgId>", "Message ID to remind about")
-    .option("-t, --type <types...>", "Reminder types: 1=popup, 2=SMS, 3=phone call")
-    .option("-u, --user <ids...>", "User IDs (staff openIds) to remind")
+    .option("-t, --type <types...>", "Reminder types, space-separated: 1=popup, 2=SMS, 3=phone call")
+    .option("-u, --user <ids...>", "User IDs to remind, space-separated (staff openIds)")
     .action(async (msgId, opts) => {
       const client = getClient();
       const reminderTypes = opts.type ? opts.type.map(Number) : [];

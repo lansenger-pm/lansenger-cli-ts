@@ -79,7 +79,7 @@ export function registerStaffCommands(program: Command) {
     .option("--user-token <token>", "User token", "")
     .option("--user-id <userId>", "User ID context", "")
     .option("--recursive/--no-recursive", "Recursive search", true)
-    .option("--sector <ids...>", "Sector IDs")
+    .option("--sector <ids...>", "Sector IDs, space-separated")
     .option("-p, --page <page>", "Page number")
     .option("-s, --size <size>", "Page size")
     .action(async (keyword, opts) => {
