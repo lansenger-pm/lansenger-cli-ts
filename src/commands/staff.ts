@@ -78,8 +78,8 @@ export function registerStaffCommands(program: Command) {
     .argument("<keyword>", "Search keyword")
     .option("--user-token <token>", "User token", "")
     .option("--user-id <userId>", "User ID context", "")
-    .option("--recursive/--no-recursive", "Recursive search", true)
-    .option("--sector <ids...>", "Sector IDs, space-separated")
+    .option("--recursive", "Recursive search", true)
+    .option("--sector <ids>", "Sector IDs, comma-separated")
     .option("-p, --page <page>", "Page number")
     .option("-s, --size <size>", "Page size")
     .action(async (keyword, opts) => {
@@ -88,7 +88,7 @@ export function registerStaffCommands(program: Command) {
         user_token: opts.userToken || undefined,
         user_id: opts.userId || undefined,
         recursive: opts.recursive,
-        sector_ids: opts.sector || undefined,
+        sector_ids: opts.sector ? commaList(opts.sector) : undefined,
         page: opts.page ? parseInt(opts.page) : undefined,
         page_size: opts.size ? parseInt(opts.size) : undefined,
       });

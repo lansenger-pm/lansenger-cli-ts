@@ -1,6 +1,6 @@
 {
   "name": "lansenger-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "CLI for Lansenger (蓝信) — send messages, manage groups, staff, departments, calendars, todos, and more",
   "main": "dist/main.js",
   "bin": {
