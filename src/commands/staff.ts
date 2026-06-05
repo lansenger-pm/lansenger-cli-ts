@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError, commaList } from "../utils";
+import { getClient, outputResult, checkError } from "../utils";
 
 export function registerStaffCommands(program: Command) {
   const cmd = program.command("staff").description("Query staff/contacts information");
@@ -78,8 +78,8 @@ export function registerStaffCommands(program: Command) {
     .argument("<keyword>", "Search keyword")
     .option("--user-token <token>", "User token", "")
     .option("--user-id <userId>", "User ID context", "")
-    .option("--recursive", "Recursive search", true)
-    .option("--sector <ids>", "Sector IDs, comma-separated")
+    .option("-R, --recursive", "Recursive search", true)
+    .option("-S, --sector <ids...>", "Sector IDs (space-separated)")
     .option("-p, --page <page>", "Page number")
     .option("-s, --size <size>", "Page size")
     .action(async (keyword, opts) => {
@@ -88,7 +88,7 @@ export function registerStaffCommands(program: Command) {
         user_token: opts.userToken || undefined,
         user_id: opts.userId || undefined,
         recursive: opts.recursive,
-        sector_ids: opts.sector ? commaList(opts.sector) : undefined,
+        sector_ids: opts.sector || undefined,
         page: opts.page ? parseInt(opts.page) : undefined,
         page_size: opts.size ? parseInt(opts.size) : undefined,
       });

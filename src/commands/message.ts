@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError, parseJsonOption, commaList } from "../utils";
+import { getClient, outputResult, checkError, parseJsonOption } from "../utils";
 
 export function registerMessageCommands(program: Command) {
   const cmd = program.command("message").description("Send and manage messages");
@@ -14,7 +14,7 @@ export function registerMessageCommands(program: Command) {
     .option("--cover-image <path>", "Cover image path for video attachments", "")
     .option("-g, --group", "Send as group message", false)
     .option("--mention-all", "@all in group", false)
-    .option("--mention <ids>", "User IDs to @mention (comma-separated, e.g. --mention id1,id2)")
+    .option("-m, --mention <ids...>", "User IDs to @mention (space-separated)")
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
     .action(async (chatId, content, opts) => {
@@ -25,7 +25,7 @@ export function registerMessageCommands(program: Command) {
         cover_image_path: opts.coverImage || undefined,
         is_group: opts.group,
         reminder_all: opts.mentionAll,
-        reminder_user_ids: opts.mention ? commaList(opts.mention) : undefined,
+        reminder_user_ids: opts.mention || undefined,
         user_token: opts.userToken || undefined,
         sender_id: opts.senderId || undefined,
       });
@@ -39,7 +39,7 @@ export function registerMessageCommands(program: Command) {
     .argument("<chatId>", "Chat ID")
     .argument("<content>", "Markdown content")
     .option("--mention-all", "@all in group", false)
-    .option("--mention <ids>", "User IDs to @mention (comma-separated, e.g. --mention id1,id2)")
+    .option("-m, --mention <ids...>", "User IDs to @mention (space-separated)")
     .option("-g, --group", "Send as group message", false)
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
@@ -47,7 +47,7 @@ export function registerMessageCommands(program: Command) {
       const client = getClient();
       const result = await client.sendMarkdown(chatId, content, {
         reminder_all: opts.mentionAll,
-        reminder_user_ids: opts.mention ? commaList(opts.mention) : undefined,
+        reminder_user_ids: opts.mention || undefined,
         is_group: opts.group,
         user_token: opts.userToken || undefined,
         sender_id: opts.senderId || undefined,
@@ -171,8 +171,8 @@ export function registerMessageCommands(program: Command) {
     .option("--head-icon <url>", "Head icon URL", "")
     .option("--status-desc <desc>", "Head status description (div-style HTML, max 30 bytes)", "")
     .option("--status-colour <colour>", "Head status DOT colour (hex, e.g. #FFB116)", "")
-    .option("--field <json>", "Card fields as JSON array, e.g. --field '[{\"key\":\"k\",\"value\":\"v\"},{\"key\":\"k2\",\"value\":\"v2\"}]'")
-    .option("--link <json>", "Card links as JSON array, e.g. --link '[{\"title\":\"T\",\"url\":\"U\"},{\"title\":\"T2\",\"url\":\"U2\"}]'")
+    .option("-F, --field <json...>", "Card fields as JSON dicts (space-separated)")
+    .option("-L, --link <json...>", "Card links as JSON dicts (space-separated)")
     .option("-g, --group", "Send as group message", false)
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
@@ -185,8 +185,8 @@ export function registerMessageCommands(program: Command) {
           colour: opts.statusColour || "",
         };
       }
-      const parsedFields = opts.field ? parseJsonOption(opts.field) : undefined;
-      const parsedLinks = opts.link ? parseJsonOption(opts.link) : undefined;
+      const parsedFields = opts.field ? opts.field.map((f: string) => parseJsonOption(f)) : undefined;
+      const parsedLinks = opts.link ? opts.link.map((l: string) => parseJsonOption(l)) : undefined;
       const result = await client.sendAppCard(chatId, bodyTitle, {
         head_title: opts.headTitle || undefined,
         body_sub_title: opts.subTitle || undefined,
@@ -216,7 +216,7 @@ export function registerMessageCommands(program: Command) {
     .option("--last", "Mark as last update", false)
     .option("--status-desc <desc>", "New status description (div-style HTML, max 30 bytes)", "")
     .option("--status-colour <colour>", "New status DOT colour (hex)", "")
-    .option("--link <json>", "Updated links as JSON array")
+    .option("-L, --link <json...>", "Updated links as JSON dicts (space-separated)")
     .action(async (msgId, opts) => {
       const client = getClient();
       let headStatusInfo = undefined;
@@ -226,7 +226,7 @@ export function registerMessageCommands(program: Command) {
           colour: opts.statusColour || "",
         };
       }
-      const parsedLinks = opts.link ? parseJsonOption(opts.link) : undefined;
+      const parsedLinks = opts.link ? opts.link.map((l: string) => parseJsonOption(l)) : undefined;
       const result = await client.updateDynamicCard(msgId, {
         is_last_update: opts.last,
         head_status_info: headStatusInfo,
@@ -257,15 +257,15 @@ export function registerMessageCommands(program: Command) {
     .description("Send a bot notification message")
     .argument("<msgType>", "Message type")
     .argument("<msgData>", "Message data as JSON")
-    .option("--chat-id <ids>", "Chat IDs, comma-separated (or group IDs if --group)")
-    .option("--dept <ids>", "Department IDs, comma-separated (bot channel only)")
+    .option("-C, --chat-id <ids...>", "Chat IDs (space-separated, or group IDs if --group)")
+    .option("-D, --dept <ids...>", "Department IDs (space-separated, bot channel only)")
     .option("--user-token <token>", "User token", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .option("-g, --group", "Send to groups instead of users", false)
     .action(async (msgType, msgData, opts) => {
       const client = getClient();
       const parsedData = parseJsonOption(msgData);
-      const result = await client.sendBotMessage(msgType, parsedData, opts.chatId ? commaList(opts.chatId) : undefined, opts.dept ? commaList(opts.dept) : undefined, {
+      const result = await client.sendBotMessage(msgType, parsedData, opts.chatId || undefined, opts.dept || undefined, {
         user_token: opts.userToken || undefined,
         entry_id: opts.entryId || undefined,
         is_group: opts.group,
@@ -283,7 +283,7 @@ export function registerMessageCommands(program: Command) {
     .option("--user-token <token>", "User token", "")
     .option("--sender-id <senderId>", "Sender staff ID", "")
     .option("--mention-all", "@all (text/formatText only)", false)
-    .option("--mention <ids>", "User IDs to @mention (comma-separated, text/formatText only)")
+    .option("-m, --mention <ids...>", "User IDs to @mention (space-separated, text/formatText only)")
     .option("--outlines <outlines>", "Group notification digest", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .action(async (groupId, msgType, msgData, opts) => {
@@ -293,7 +293,7 @@ export function registerMessageCommands(program: Command) {
         user_token: opts.userToken || undefined,
         sender_id: opts.senderId || undefined,
         reminder_all: opts.mentionAll,
-        reminder_user_ids: opts.mention ? commaList(opts.mention) : undefined,
+        reminder_user_ids: opts.mention || undefined,
         outlines: opts.outlines || undefined,
         entry_id: opts.entryId || undefined,
       });
@@ -324,7 +324,7 @@ export function registerMessageCommands(program: Command) {
     .option("--head <head>", "OA card head title", "")
     .option("--sub-title <sub>", "OA card sub title", "")
     .option("--staff-id <id>", "Staff ID", "")
-    .option("--field <json>", "Card fields as JSON array, e.g. --field '[{\"key\":\"k\",\"value\":\"v\"}]'")
+    .option("-F, --field <json...>", "Card fields as JSON dicts (space-separated)")
     .option("--link <url>", "Card click link URL", "")
     .option("--pc-link <url>", "PC link URL", "")
     .option("--pad-link <url>", "Pad link URL", "")
@@ -334,7 +334,7 @@ export function registerMessageCommands(program: Command) {
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
     .action(async (chatId, title, opts) => {
       const client = getClient();
-      const parsedFields = opts.field ? parseJsonOption(opts.field) : undefined;
+      const parsedFields = opts.field ? opts.field.map((f: string) => parseJsonOption(f)) : undefined;
       const parsedAction = opts.cardAction ? parseJsonOption(opts.cardAction) : undefined;
       const result = await client.sendOacard(chatId, title, {
         head: opts.head || undefined,
@@ -358,8 +358,8 @@ export function registerMessageCommands(program: Command) {
     .description("Send a public account message")
     .argument("<msgType>", "Message type")
     .argument("<msgData>", "Message data as JSON")
-    .option("--chat-id <ids>", "Chat IDs, comma-separated")
-    .option("--dept <ids>", "Department IDs, comma-separated")
+    .option("-C, --chat-id <ids...>", "Chat IDs (space-separated)")
+    .option("-D, --dept <ids...>", "Department IDs (space-separated)")
     .option("--account-id <id>", "Account ID", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .option("--attach <attach>", "Attach info", "")
@@ -367,7 +367,7 @@ export function registerMessageCommands(program: Command) {
     .action(async (msgType, msgData, opts) => {
       const client = getClient();
       const parsedData = parseJsonOption(msgData);
-      const result = await client.sendAccountMessage(msgType, parsedData, opts.chatId ? commaList(opts.chatId) : undefined, opts.dept ? commaList(opts.dept) : undefined, {
+      const result = await client.sendAccountMessage(msgType, parsedData, opts.chatId || undefined, opts.dept || undefined, {
         account_id: opts.accountId || undefined,
         entry_id: opts.entryId || undefined,
         attach: opts.attach || undefined,
@@ -403,8 +403,8 @@ export function registerMessageCommands(program: Command) {
     .command("send-reminder")
     .description("Send a reminder for a message")
     .argument("<msgId>", "Message ID to remind about")
-    .option("-t, --type <types...>", "Reminder types, space-separated: 1=popup, 2=SMS, 3=phone call")
-    .option("-u, --user <ids...>", "User IDs to remind, space-separated (staff openIds)")
+    .option("-t, --type <types...>", "Reminder types (space-separated): 1=popup, 2=SMS, 3=phone call")
+    .option("-u, --user <ids...>", "User IDs to remind (space-separated, staff openIds)")
     .action(async (msgId, opts) => {
       const client = getClient();
       const reminderTypes = opts.type ? opts.type.map(Number) : [];
