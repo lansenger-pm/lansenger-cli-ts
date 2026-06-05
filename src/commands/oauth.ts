@@ -1,6 +1,13 @@
 import { Command } from "commander";
+import * as http from "http";
 import { LansengerClient } from "lansenger-sdk-ts";
-import { getClient, outputResult, checkError, getStore } from "../utils";
+import { getClient, outputResult, checkError, getStore, jsonOutput } from "../utils";
+
+interface CallbackResult {
+  code?: string;
+  state?: string;
+  error?: string;
+}
 
 export function registerOauthCommands(program: Command) {
   const cmd = program.command("oauth").description("OAuth2 user authorization operations");
@@ -84,5 +91,106 @@ export function registerOauthCommands(program: Command) {
     .action(async (callbackState, expectedState) => {
       const valid = LansengerClient.validateCallbackState(callbackState, expectedState);
       outputResult({ valid });
+    });
+
+  cmd
+    .command("local-callback")
+    .description("Start a local HTTP server to capture OAuth2 callback and optionally exchange the code")
+    .option("-p, --port <port>", "Local HTTP server port", "8765")
+    .option("-s, --scope <scope>", "OAuth2 scope", "basic_userinfor")
+    .option("--state <state>", "CSRF state (auto-generated if empty)", "")
+    .option("-E, --exchange", "Auto-exchange code for userToken", true)
+    .option("--no-exchange", "Do not auto-exchange code")
+    .option("-t, --timeout <timeout>", "Max wait seconds for callback", "120")
+    .action(async (opts) => {
+      const port = parseInt(opts.port);
+      const scope = opts.scope;
+      const state = opts.state || undefined;
+      const autoExchange = opts.exchange !== false;
+      const timeout = parseInt(opts.timeout);
+      const redirectUri = `http://localhost:${port}`;
+
+      const client = getClient();
+      const authUrl = client.buildAuthorizeUrl(redirectUri, { scope, state });
+
+      if (jsonOutput) {
+        console.log(JSON.stringify({ authorize_url: authUrl, redirect_uri: redirectUri, port }, null, 2));
+      } else {
+        console.log(`Authorize URL:\n${authUrl}`);
+        console.log(`\nWaiting for callback on port ${port}... (timeout: ${timeout}s)`);
+        console.log("Open the URL above in a browser, authorize, then wait.");
+      }
+
+      const callbackResult: { value: CallbackResult | null } = { value: null };
+
+      const server = http.createServer((req, res) => {
+        const url = new URL(req.url || "/", `http://localhost:${port}`);
+        const code = url.searchParams.get("code") || "";
+        const receivedState = url.searchParams.get("state") || "";
+        const error = url.searchParams.get("error") || "";
+
+        if (error) {
+          res.writeHead(400);
+          res.end(`OAuth2 error: ${error}`);
+          callbackResult.value = { error };
+        } else if (code) {
+          res.writeHead(200);
+          res.end("Authorization successful. You can close this tab.");
+          callbackResult.value = { code, state: receivedState };
+        } else {
+          res.writeHead(400);
+          res.end("Missing code parameter.");
+          callbackResult.value = { error: "missing_code" };
+        }
+      });
+
+      server.timeout = 1000;
+
+      const startTime = Date.now();
+      while (callbackResult.value === null && (Date.now() - startTime) < timeout * 1000) {
+        await new Promise<void>((resolve) => {
+          server.once("request", () => resolve());
+          const timer = setTimeout(resolve, 1000);
+          timer.unref();
+        });
+      }
+
+      server.close();
+
+      if (callbackResult.value === null) {
+        console.error(`Timeout: no callback received within ${timeout}s`);
+        process.exit(1);
+      }
+
+      const result = callbackResult.value;
+      if (result.error) {
+        console.error(`OAuth2 error: ${result.error}`);
+        process.exit(1);
+      }
+
+      const code = result.code || "";
+      const receivedState = result.state || "";
+
+      if (!jsonOutput) {
+        console.log(`Received code: ${code}`);
+        console.log(`Received state: ${receivedState}`);
+      }
+
+      if (autoExchange) {
+        const exchangeResult = await client.exchangeCode(code, { redirect_uri: redirectUri });
+        checkError(exchangeResult);
+        if (exchangeResult.success && exchangeResult.user_token) {
+          const store = getStore();
+          store.saveUserToken(exchangeResult.user_token, exchangeResult.refresh_token || "", exchangeResult.expires_in || 0);
+        }
+        outputResult(exchangeResult);
+      } else {
+        if (jsonOutput) {
+          console.log(JSON.stringify({ code, state: receivedState }, null, 2));
+        } else {
+          console.log(`\nUse this code to exchange manually:`);
+          console.log(`  lansenger oauth exchange-code ${code} --redirect-uri ${redirectUri}`);
+        }
+      }
     });
 }
