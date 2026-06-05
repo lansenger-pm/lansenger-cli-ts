@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { setJsonOutput, setActiveProfile } from "./utils";
+import * as pkg from "../package.json";
 import { registerConfigCommands } from "./commands/config";
 import { registerMessageCommands } from "./commands/message";
 import { registerStaffCommands } from "./commands/staff";
@@ -20,7 +21,7 @@ const program = new Command();
 program
   .name("lansenger")
   .description("CLI for Lansenger (蓝信) — send messages, manage groups, staff, departments, calendars, todos, and more")
-  .version("1.0.0")
+  .version(pkg.version)
   .option("-j, --json", "Output as JSON", false)
   .option("-P, --profile <profile>", "Credential profile", "default")
   .hook("preAction", () => {

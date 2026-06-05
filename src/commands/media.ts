@@ -25,16 +25,16 @@ export function registerMediaCommands(program: Command) {
     .description("Upload media for app/bot usage (4.5.4 API)")
     .argument("<filePath>", "Local file path to upload")
     .option("-t, --media-type <type>", "file, video, image, audio (4.5.4 app/bot)", "file")
-    .option("--width <width>", "Width for video/image", "0")
-    .option("--height <height>", "Height for video/image", "0")
-    .option("--duration <duration>", "Duration in seconds for video/audio", "0")
+    .option("--width <width>", "Width for video/image")
+    .option("--height <height>", "Height for video/image")
+    .option("--duration <duration>", "Duration in seconds for video/audio")
     .action(async (filePath, opts) => {
       const client = getClient();
       const result = await client.uploadAppMediaFile(filePath, {
         media_type: opts.mediaType,
-        width: parseInt(opts.width) || undefined,
-        height: parseInt(opts.height) || undefined,
-        duration: parseInt(opts.duration) || undefined,
+        width: opts.width ? parseInt(opts.width) : undefined,
+        height: opts.height ? parseInt(opts.height) : undefined,
+        duration: opts.duration ? parseInt(opts.duration) : undefined,
       });
       checkError(result);
       outputResult(result);
