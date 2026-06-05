@@ -40,7 +40,9 @@ export function registerOauthCommands(program: Command) {
       checkError(result);
       if (result.success && result.user_token) {
         const store = getStore();
-        store.saveUserToken(result.user_token, result.refresh_token || "", result.expires_in || 0);
+        const existing = store.loadUserToken();
+        const rt = result.refresh_token || existing.refresh_token || "";
+        store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0);
       }
       outputResult(result);
     });
@@ -58,7 +60,9 @@ export function registerOauthCommands(program: Command) {
       checkError(result);
       if (result.success && result.user_token) {
         const store = getStore();
-        store.saveUserToken(result.user_token, result.refresh_token || "", result.expires_in || 0);
+        const existing = store.loadUserToken();
+        const rt = result.refresh_token || existing.refresh_token || "";
+        store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0);
       }
       outputResult(result);
     });
@@ -181,7 +185,9 @@ export function registerOauthCommands(program: Command) {
         checkError(exchangeResult);
         if (exchangeResult.success && exchangeResult.user_token) {
           const store = getStore();
-          store.saveUserToken(exchangeResult.user_token, exchangeResult.refresh_token || "", exchangeResult.expires_in || 0);
+          const existing = store.loadUserToken();
+          const rt = exchangeResult.refresh_token || existing.refresh_token || "";
+          store.saveUserToken(exchangeResult.user_token, rt, exchangeResult.expires_in || 0, undefined, exchangeResult.refresh_expires_in || 0);
         }
         outputResult(exchangeResult);
       } else {
