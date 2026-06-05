@@ -3,8 +3,8 @@ import { getClient, outputResult, outputList, checkError, jsonOutput } from "../
 
 function splitMonths(startUs: number, endUs: number): [number, number][] {
   const results: [number, number][] = [];
-  const startDt = startUs ? new Date(startUs / 1_000_000) : new Date(2020, 0, 1);
-  const endDt = new Date(endUs / 1_000_000);
+  const startDt = startUs ? new Date(startUs / 1_000) : new Date(2020, 0, 1);
+  const endDt = new Date(endUs / 1_000);
 
   let year = startDt.getFullYear();
   let month = startDt.getMonth();
