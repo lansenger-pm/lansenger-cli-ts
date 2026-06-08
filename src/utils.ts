@@ -14,7 +14,7 @@ export function getStore(): CredentialStore {
 
 export function getClient(): LansengerClient {
   const store = getStore();
-  if (store.hasCredentials()) {
+  if (store.hasFullConfig()) {
     return LansengerClient.fromStore(activeProfile);
   }
   return LansengerClient.fromEnv();

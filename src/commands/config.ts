@@ -1,5 +1,6 @@
 import { Command } from "commander";
-import { getStore, outputResult, activeProfile } from "../utils";
+import { CredentialStore } from "lansenger-sdk-ts";
+import { outputResult, activeProfile } from "../utils";
 
 const VALID_KEYS = ["app_id", "app_secret", "api_gateway_url", "passport_url", "encoding_key", "callback_token"];
 
@@ -18,7 +19,7 @@ export function registerConfigCommands(program: Command) {
         process.exit(1);
       }
       const p = opts.profile || activeProfile;
-      const store = getStore();
+      const store = new CredentialStore(undefined, p);
       const creds = store.loadCredentials();
       creds[key] = value;
       store.saveCredentials(
@@ -38,7 +39,7 @@ export function registerConfigCommands(program: Command) {
     .option("-P, --profile <profile>", "Profile name (overrides global --profile)")
     .action((opts) => {
       const p = opts.profile || activeProfile;
-      const store = getStore();
+      const store = new CredentialStore(undefined, p);
       const creds = store.loadCredentials();
       const masked = {
         app_id: creds.app_id,
@@ -60,13 +61,13 @@ export function registerConfigCommands(program: Command) {
     .option("--all", "Delete entire state file (all profiles)", false)
     .action((opts) => {
       if (opts.all) {
-        const store = getStore();
+        const store = new CredentialStore();
         store.clear();
         outputResult({ success: true, message: "Cleared entire state file (all profiles)." });
         return;
       }
       const p = opts.profile || activeProfile;
-      const store = getStore();
+      const store = new CredentialStore(undefined, p);
       store.clearProfile();
       outputResult({ success: true, message: `Cleared profile '${p}'.` });
     });
@@ -75,7 +76,7 @@ export function registerConfigCommands(program: Command) {
     .command("list-profiles")
     .description("List all stored credential profiles")
     .action(() => {
-      const store = getStore();
+      const store = new CredentialStore();
       const profiles = store.listProfiles();
       const active = store.getActiveProfile();
       outputResult({ profiles, active_profile: active });

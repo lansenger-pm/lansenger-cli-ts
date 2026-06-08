@@ -149,12 +149,11 @@ export function registerOauthCommands(program: Command) {
         }
       });
 
-      server.timeout = 1000;
+      server.timeout = 30000;
 
       const startTime = Date.now();
       while (callbackResult.value === null && (Date.now() - startTime) < timeout * 1000) {
         await new Promise<void>((resolve) => {
-          server.once("request", () => resolve());
           const timer = setTimeout(resolve, 1000);
           timer.unref();
         });
