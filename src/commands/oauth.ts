@@ -106,13 +106,14 @@ export function registerOauthCommands(program: Command) {
     .option("-E, --exchange", "Auto-exchange code for userToken", true)
     .option("--no-exchange", "Do not auto-exchange code")
     .option("-t, --timeout <timeout>", "Max wait seconds for callback", "120")
+    .option("--redirect-uri <uri>", "Override redirect_uri (default: http://localhost:<port>)", "")
     .action(async (opts) => {
       const port = parseInt(opts.port);
       const scope = opts.scope;
       const state = opts.state || undefined;
       const autoExchange = opts.exchange !== false;
       const timeout = parseInt(opts.timeout);
-      const redirectUri = `http://localhost:${port}`;
+      const redirectUri = opts.redirectUri || `http://localhost:${port}`;
 
       const client = getClient();
       const authUrl = client.buildAuthorizeUrl(redirectUri, { scope, state });
