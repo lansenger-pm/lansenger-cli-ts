@@ -21,7 +21,7 @@
   "dependencies": {
     "cli-table3": "^0.6.0",
     "commander": "^12.0.0",
-    "lansenger-sdk-ts": "^1.2.0",
+    "lansenger-sdk-ts": "^1.2.2",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {

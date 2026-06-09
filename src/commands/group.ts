@@ -99,6 +99,17 @@ export function registerGroupCommands(program: Command) {
     .option("--name <name>", "New group name", "")
     .option("--desc <desc>", "New description", "")
     .option("--owner <ownerId>", "New owner ID", "")
+    .option("--avatar <avatarId>", "New avatar ID", "")
+    .option("--assistant <ids...>", "Staff IDs to promote to assistant")
+    .option("--demote-assistant <ids...>", "Staff IDs to demote from assistant")
+    .option("--manage-mode <mode>", "0=all manage, 1=owner only")
+    .option("--location-share", "Enable/disable location sharing", false)
+    .option("--needs-confirm", "Join requires confirmation", false)
+    .option("--is-public", "Public visibility", false)
+    .option("--max-members <count>", "Maximum member count")
+    .option("--max-history <count>", "Max history message count")
+    .option("--remind-all", "@mention enabled/disabled", false)
+    .option("--mute", "Group mute on/off", false)
     .option("--user-token <token>", "User token", "")
     .action(async (groupId, opts) => {
       const client = getClient();
@@ -106,6 +117,17 @@ export function registerGroupCommands(program: Command) {
         name: opts.name || undefined,
         description: opts.desc || undefined,
         owner_id: opts.owner || undefined,
+        avatar_id: opts.avatar || undefined,
+        assistant: opts.assistant || undefined,
+        demote_assistant: opts.demoteAssistant || undefined,
+        manage_mode: opts.manageMode ? parseInt(opts.manageMode) : undefined,
+        location_share: opts.locationShare,
+        needs_confirm: opts.needsConfirm,
+        is_public: opts.isPublic,
+        max_members: opts.maxMembers ? parseInt(opts.maxMembers) : undefined,
+        max_history_msg_count: opts.maxHistory ? parseInt(opts.maxHistory) : undefined,
+        remind_all: opts.remindAll,
+        send_msg_status: opts.mute,
         user_token: opts.userToken || undefined,
       });
       checkError(result);

@@ -8,7 +8,7 @@ export function registerStreamingCommands(program: Command) {
     .command("create")
     .description("Create a stream message session")
     .argument("<receiverId>", "Receiver ID")
-    .argument("<receiverType>", "Receiver type: single or group")
+    .argument("<receiverType>", "Receiver type: staff or group")
     .argument("<streamId>", "Stream ID (unique per session)")
     .action(async (receiverId, receiverType, streamId) => {
       const client = getClient();

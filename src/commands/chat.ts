@@ -66,7 +66,7 @@ export function registerChatCommands(program: Command) {
     .option("--staff-id <staffId>", "Private chat partner staffId", "")
     .option("--group-id <groupId>", "Group openId", "")
     .option("-s, --size <size>", "Per-page count (max 100)", "100")
-    .option("--cursor <cursor>", "Deep pagination cursor, first call: 0", "0")
+    .option("--version <version>", "Deep pagination cursor, first call: 0", "0")
     .option("--start <start>", "Start time in microseconds", "0")
     .option("--end <end>", "End time in microseconds", "0")
     .option("--sender-id <senderId>", "Filter by sender staffId", "")
@@ -81,7 +81,7 @@ export function registerChatCommands(program: Command) {
           staff_id: opts.staffId || undefined,
           group_id: opts.groupId || undefined,
           page_size: parseInt(opts.size),
-          base_version: opts.cursor,
+          base_version: opts.version,
           start_time: parseInt(opts.start),
           end_time: parseInt(opts.end),
           sender_id: opts.senderId || undefined,
