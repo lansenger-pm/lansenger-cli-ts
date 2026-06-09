@@ -38,13 +38,7 @@ export function registerOauthCommands(program: Command) {
         redirect_uri: opts.redirectUri || undefined,
       });
       checkError(result);
-      if (result.success && result.user_token) {
-        const store = getStore();
-        const existing = store.loadUserToken();
-        const rt = result.refresh_token || existing.refresh_token || "";
-        store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0);
-      }
-      outputResult(result);
+      outputResult(result, ["user_token", "expires_in", "refresh_token", "refresh_expires_in", "staff_id", "scope"], "Exchange Code Result");
     });
 
   cmd
@@ -64,7 +58,7 @@ export function registerOauthCommands(program: Command) {
         const rt = result.refresh_token || existing.refresh_token || "";
         store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0);
       }
-      outputResult(result);
+      outputResult(result, ["user_token", "expires_in", "refresh_token", "staff_id"], "Refresh Token Result");
     });
 
   cmd
@@ -75,7 +69,7 @@ export function registerOauthCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchUserInfoByToken(userToken);
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["staff_id", "name", "org_id", "org_name", "mobile_phone", "email", "employee_number"], "User Info");
     });
 
   cmd

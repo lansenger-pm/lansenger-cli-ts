@@ -42,14 +42,15 @@ export function registerConfigCommands(program: Command) {
       const store = new CredentialStore(undefined, p);
       const creds = store.loadCredentials();
       const masked = {
-        app_id: creds.app_id,
-        app_secret: creds.app_secret ? creds.app_secret.substring(0, 8) + "..." : "",
+        app_id: creds.app_id ? "***" : "(empty)",
+        app_secret: creds.app_secret ? "***" : "(empty)",
         api_gateway_url: creds.api_gateway_url,
         passport_url: creds.passport_url,
-        encoding_key: creds.encoding_key ? "(set)" : "(not set)",
-        callback_token: creds.callback_token ? "(set)" : "(not set)",
+        encoding_key: creds.encoding_key ? "***" : "(empty)",
+        callback_token: creds.callback_token ? "***" : "(empty)",
         profile: p,
-        has_full_config: store.hasFullConfig(),
+        has_credentials: store.hasFullConfig(),
+        store_path: store.path,
       };
       outputResult(masked);
     });

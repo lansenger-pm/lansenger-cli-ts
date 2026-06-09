@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { setJsonOutput, setActiveProfile } from "./utils";
+import { setJsonOutput, setActiveProfile, jsonOutput } from "./utils";
 import * as pkg from "../package.json";
 import { registerConfigCommands } from "./commands/config";
 import { registerMessageCommands } from "./commands/message";
@@ -21,13 +21,22 @@ const program = new Command();
 program
   .name("lansenger")
   .description("CLI for Lansenger (蓝信) — send messages, manage groups, staff, departments, calendars, todos, and more")
-  .version(pkg.version)
   .option("-j, --json", "Output as JSON", false)
   .option("-P, --profile <profile>", "Credential profile", "default")
+  .option("-v, --version", "Show CLI and SDK versions", false)
   .hook("preAction", () => {
     const opts = program.opts();
     if (opts.json) setJsonOutput(true);
     if (opts.profile) setActiveProfile(opts.profile);
+    if (opts.version) {
+      const sdkPkg = require("lansenger-sdk-ts/package.json");
+      if (jsonOutput) {
+        console.log(JSON.stringify({ cli_version: pkg.version, sdk_version: sdkPkg.version }, null, 2));
+      } else {
+        console.log(`lansenger-cli ${pkg.version} (SDK ${sdkPkg.version})`);
+      }
+      process.exit(0);
+    }
   });
 
 registerConfigCommands(program);

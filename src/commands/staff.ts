@@ -13,7 +13,7 @@ export function registerStaffCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchStaffBasicInfo(staffId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["org_id", "org_name", "name", "gender", "signature", "avatar_url", "status", "departments"], "Staff Basic Info");
     });
 
   cmd
@@ -25,7 +25,7 @@ export function registerStaffCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchStaffDetail(staffId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["org_id", "org_name", "name", "gender", "email", "mobile_phone", "avatar_url", "career", "tags"], "Staff Detail");
     });
 
   cmd
@@ -37,21 +37,21 @@ export function registerStaffCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchDepartmentAncestors(staffId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, undefined, "Department Ancestors");
     });
 
   cmd
     .command("id-mapping")
     .description("Map an ID (phone/email/etc.) to a staff ID")
     .argument("<orgId>", "Organization ID")
-    .argument("<idType>", "ID type: phone, email, login_name, external_id")
+    .argument("<idType>", "ID type: employ_id, mobile, mail, login, external_id")
     .argument("<idValue>", "ID value to map")
     .option("--user-token <token>", "User token", "")
     .action(async (orgId, idType, idValue, opts) => {
       const client = getClient();
       const result = await client.fetchStaffIdMapping(orgId, idType, idValue, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["staff_id"], "Staff ID Mapping");
     });
 
   cmd
@@ -69,7 +69,7 @@ export function registerStaffCommands(program: Command) {
         page_size: parseInt(opts.size),
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["has_more", "total"], "Org Extra Fields");
     });
 
   cmd
@@ -78,8 +78,8 @@ export function registerStaffCommands(program: Command) {
     .argument("<keyword>", "Search keyword")
     .option("--user-token <token>", "User token", "")
     .option("--user-id <userId>", "User ID context", "")
-    .option("-R, --recursive", "Recursive search", true)
-    .option("-S, --sector <ids...>", "Sector IDs (space-separated)")
+    .option("--recursive", "Recursive search", true)
+    .option("--sector <ids...>", "Sector IDs (space-separated)")
     .option("-p, --page <page>", "Page number")
     .option("-s, --size <size>", "Page size")
     .action(async (keyword, opts) => {
@@ -93,7 +93,7 @@ export function registerStaffCommands(program: Command) {
         page_size: opts.size ? parseInt(opts.size) : undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["has_more", "total"], "Staff Search");
     });
 
   cmd
@@ -105,6 +105,6 @@ export function registerStaffCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchOrgInfo(orgId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["org_id", "org_name", "icon_url"], "Org Info");
     });
 }

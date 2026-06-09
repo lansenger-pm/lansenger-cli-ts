@@ -12,8 +12,8 @@ export function registerGroupCommands(program: Command) {
     .option("--owner <ownerId>", "Owner staff ID", "")
     .option("-d, --desc <desc>", "Group description", "")
     .option("--avatar <avatarId>", "Avatar ID", "")
-    .option("-S, --staff <ids...>", "Staff IDs to add (space-separated)")
-    .option("-D, --dept <ids...>", "Department IDs to add (space-separated)")
+    .option("--staff <ids...>", "Staff IDs to add (space-separated)")
+    .option("--dept <ids...>", "Department IDs to add (space-separated)")
     .option("--user-token <token>", "User token", "")
     .action(async (name, orgId, opts) => {
       const client = getClient();
@@ -26,7 +26,7 @@ export function registerGroupCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["group_id", "total_members"], "Create Group Result");
     });
 
   cmd
@@ -38,7 +38,7 @@ export function registerGroupCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchGroupInfo(groupId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["name", "description", "owner", "creator", "state", "manage_mode", "is_public", "max_members", "total_members"], "Group Info");
     });
 
   cmd
@@ -56,7 +56,7 @@ export function registerGroupCommands(program: Command) {
         page_size: parseInt(opts.size),
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total_members"], "Group Members");
     });
 
   cmd
@@ -73,7 +73,7 @@ export function registerGroupCommands(program: Command) {
         page_size: parseInt(opts.size),
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total_group_ids"], "Group List");
     });
 
   cmd
@@ -89,7 +89,7 @@ export function registerGroupCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["is_in_group"], "Is In Group");
     });
 
   cmd
@@ -103,13 +103,18 @@ export function registerGroupCommands(program: Command) {
     .option("--assistant <ids...>", "Staff IDs to promote to assistant")
     .option("--demote-assistant <ids...>", "Staff IDs to demote from assistant")
     .option("--manage-mode <mode>", "0=all manage, 1=owner only")
-    .option("--location-share", "Enable/disable location sharing", false)
-    .option("--needs-confirm", "Join requires confirmation", false)
-    .option("--is-public", "Public visibility", false)
+    .option("--location-share", "Enable location sharing")
+    .option("--no-location-share", "Disable location sharing")
+    .option("--needs-confirm", "Join requires confirmation")
+    .option("--no-needs-confirm", "Join does not require confirmation")
+    .option("--is-public", "Public visibility")
+    .option("--no-is-public", "Not public")
     .option("--max-members <count>", "Maximum member count")
     .option("--max-history <count>", "Max history message count")
-    .option("--remind-all", "@mention enabled/disabled", false)
-    .option("--mute", "Group mute on/off", false)
+    .option("--remind-all", "@mention enabled")
+    .option("--no-remind-all", "@mention disabled")
+    .option("--mute", "Group mute on")
+    .option("--no-mute", "Group mute off")
     .option("--user-token <token>", "User token", "")
     .action(async (groupId, opts) => {
       const client = getClient();
@@ -121,13 +126,13 @@ export function registerGroupCommands(program: Command) {
         assistant: opts.assistant || undefined,
         demote_assistant: opts.demoteAssistant || undefined,
         manage_mode: opts.manageMode ? parseInt(opts.manageMode) : undefined,
-        location_share: opts.locationShare,
-        needs_confirm: opts.needsConfirm,
-        is_public: opts.isPublic,
+        location_share: opts.locationShare !== undefined ? opts.locationShare : undefined,
+        needs_confirm: opts.needsConfirm !== undefined ? opts.needsConfirm : undefined,
+        is_public: opts.isPublic !== undefined ? opts.isPublic : undefined,
         max_members: opts.maxMembers ? parseInt(opts.maxMembers) : undefined,
         max_history_msg_count: opts.maxHistory ? parseInt(opts.maxHistory) : undefined,
-        remind_all: opts.remindAll,
-        send_msg_status: opts.mute,
+        remind_all: opts.remindAll !== undefined ? opts.remindAll : undefined,
+        send_msg_status: opts.mute !== undefined ? opts.mute : undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -138,9 +143,9 @@ export function registerGroupCommands(program: Command) {
     .command("update-members")
     .description("Add or remove group members")
     .argument("<groupId>", "Group ID")
-    .option("-A, --add <ids...>", "Staff IDs to add (space-separated)")
-    .option("-X, --remove <ids...>", "Staff IDs to remove (space-separated)")
-    .option("-D, --add-dept <ids...>", "Department IDs to add (space-separated)")
+    .option("--add <ids...>", "Staff IDs to add (space-separated)")
+    .option("--remove <ids...>", "Staff IDs to remove (space-separated)")
+    .option("--add-dept <ids...>", "Department IDs to add (space-separated)")
     .option("--user-token <token>", "User token", "")
     .action(async (groupId, opts) => {
       const client = getClient();
@@ -151,7 +156,7 @@ export function registerGroupCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total_members", "added_staff_count", "deleted_staff_count"], "Update Members Result");
     });
 
   cmd

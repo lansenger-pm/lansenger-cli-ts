@@ -17,7 +17,7 @@ export function registerMediaCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id", "created_time"], "Upload Media Result (4.5.1)");
     });
 
   cmd
@@ -37,22 +37,18 @@ export function registerMediaCommands(program: Command) {
         duration: opts.duration ? parseInt(opts.duration) : undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "Upload App Media Result (4.5.4)");
     });
 
   cmd
     .command("download")
-    .description("Download a media file (to stdout as binary)")
+    .description("Download a media file (success status only; use download-to-file to save)")
     .argument("<mediaId>", "Media ID to download")
     .action(async (mediaId) => {
       const client = getClient();
       const result = await client.downloadMediaFile(mediaId);
       checkError(result);
-      if (result.success && result.data) {
-        process.stdout.write(result.data);
-      } else {
-        outputResult(result);
-      }
+      outputResult({ success: result.success, size: result.data ? result.data.length : 0, error: result.error || "" });
     });
 
   cmd
@@ -79,6 +75,6 @@ export function registerMediaCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchMediaPathInfo(mediaId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["media_path", "name", "type", "size"], "Media Path Result");
     });
 }

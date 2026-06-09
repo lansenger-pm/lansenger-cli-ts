@@ -20,7 +20,7 @@ export function getClient(): LansengerClient {
   return LansengerClient.fromEnv();
 }
 
-export function outputResult(data: any) {
+export function outputResult(data: any, fields?: string[], title?: string) {
   if (jsonOutput) {
     console.log(JSON.stringify(data, null, 2));
     return;
@@ -31,7 +31,9 @@ export function outputResult(data: any) {
   }
   if (data.toDict) {
     const d = data.toDict();
-    const entries = Object.entries(d).filter(([_, v]) => v !== null && v !== undefined);
+    const entries = fields
+      ? fields.filter(f => d[f] !== undefined && d[f] !== null).map(f => [f, d[f]] as [string, any])
+      : Object.entries(d).filter(([_, v]) => v !== null && v !== undefined);
     const table = new Table({
       head: ["Key", "Value"],
       chars: { top: "", bottom: "", left: "", right: "", middle: "", "top-mid": "", "bottom-mid": "", "left-mid": "", "right-mid": "" },
@@ -40,6 +42,7 @@ export function outputResult(data: any) {
     for (const [k, v] of entries) {
       table.push([k, typeof v === "object" ? JSON.stringify(v) : String(v)]);
     }
+    if (title) console.log(title);
     console.log(table.toString());
   } else {
     console.log(JSON.stringify(data, null, 2));
