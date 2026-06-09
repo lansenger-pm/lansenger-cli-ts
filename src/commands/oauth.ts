@@ -149,7 +149,17 @@ export function registerOauthCommands(program: Command) {
         }
       });
 
-      server.timeout = 30000;
+      // Start listening — Node.js http.createServer does not bind until listen() is called.
+      await new Promise<void>((resolve, reject) => {
+        server.on("error", (err: NodeJS.ErrnoException) => {
+          if (err.code === "EADDRINUSE") {
+            reject(new Error(`Port ${port} is already in use. Try a different port or wait a moment.`));
+          } else {
+            reject(err);
+          }
+        });
+        server.listen(port, "localhost", () => resolve());
+      });
 
       const startTime = Date.now();
       while (callbackResult.value === null && (Date.now() - startTime) < timeout * 1000) {
