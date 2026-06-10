@@ -315,10 +315,10 @@ lansenger callback verify-signature TIMESTAMP NONCE SIGNATURE --encoding-key YOU
 ### 媒體檔案
 
 ```bash
-# 上傳檔案
+# 上載檔案
 lansenger media upload /path/to/file.pdf --media-type 3
 
-# 上傳應用/機械人媒體檔案
+# 上載應用/機械人媒體檔案
 lansenger media upload-app /path/to/file.pdf --media-type file
 
 # 下載媒體檔案到本地
