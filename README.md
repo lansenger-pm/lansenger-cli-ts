@@ -124,7 +124,10 @@ lansenger message send-text group123 "请查看" --group --mention staff001 --me
 # 机器人通道发送消息
 lansenger message send-bot-message text '{"content":"通知内容"}' --chat-id user001 --chat-id user002
 
-# 群消息通道发送（需要 user_token）
+# 群消息通道发送（user_token 可选，无则显示为 bot）
+lansenger message send-group-message group123 text '{"content":"群消息"}'
+
+# 以人类用户身份发送（需要 user_token）
 lansenger message send-group-message group123 text '{"content":"群消息"}' --user-token YOUR_USER_TOKEN --sender-id staff001
 
 # 应用账号通道发送
@@ -155,7 +158,10 @@ lansenger group info group123
 # 查看群成员
 lansenger group members group123
 
-# 查看群列表
+# 查看群列表（bot 可查看所在的群，传 user_token 可查看用户所在的群）
+lansenger group list
+
+# 查看用户所在的群列表（需要 user_token）
 lansenger group list --user-token YOUR_USER_TOKEN
 
 # 检查用户是否在群内
@@ -215,7 +221,10 @@ lansenger chat list --keyword 张三 --user-token YOUR_USER_TOKEN
 # 获取私聊消息记录
 lansenger chat messages --staff-id staff001 --user-token YOUR_USER_TOKEN
 
-# 获取群聊消息记录
+# 获取群聊消息记录（bot 可直接获取所在群的消息）
+lansenger chat messages --group-id group123
+
+# 获取群聊消息记录（以用户身份，需要 user_token）
 lansenger chat messages --group-id group123 --user-token YOUR_USER_TOKEN
 ```
 
