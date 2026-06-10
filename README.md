@@ -1,16 +1,18 @@
+[English](README.md) | [简体中文](README.zhHans.md) | [繁体中文](README.zhHant.md) | [繁体中文香港](README.zhHantHK.md) | [Français](README.fr.md)
+
 # Lansenger CLI (TypeScript)
 
-蓝信（Lansenger）命令行工具 — 在终端直接调用蓝信开放平台 API，发送消息、管理群组、查询人员/部门、操作日程与待办等。
+Lansenger command-line tool — interact with Lansenger APIs directly from the terminal: send messages, manage groups, query staff/departments, operate calendars and todos, and more.
 
-命令语法与 Python/Go 版完全一致，安装任一版本即可使用。
+Command syntax is consistent with the Python and Go versions. Install any one.
 
-## 安装
+## Install
 
 ```bash
 npm install -g lansenger-cli
 ```
 
-或从源码安装：
+Or build from source:
 
 ```bash
 git clone https://github.com/lansenger-pm/lansenger-cli-ts.git
@@ -20,35 +22,35 @@ npm run build
 npm link
 ```
 
-需要 Node.js ≥ 18.0.0。
+Requires Node.js ≥ 18.0.0.
 
-## 快速开始
+## Quick Start
 
-### 1. 配置凭证
+### 1. Configure Credentials
 
-通过 `config set` 命令保存凭证（按 profile 隔离存储在 `~/.lansenger/sdk_state.json`，密钥脱敏显示，文件权限 0600）：
+Save credentials via `config set` (stored per profile in `~/.lansenger/sdk_state.json`, keys masked, file permissions 0600):
 
 ```bash
 lansenger config set app_id YOUR_APP_ID
 lansenger config set app_secret YOUR_APP_SECRET
-lansenger config set api_gateway_url https://apigw.lx.qianxin.com/open/apigw   # 私有部署需修改
+lansenger config set api_gateway_url https://apigw.lx.qianxin.com/open/apigw
 ```
 
-**OAuth2 用户认证（需要获取 userToken 时填写）**：
+**OAuth2 user auth (fill in when you need userToken)**:
 
 ```bash
 lansenger config set passport_url https://passport.lx.qianxin.com
-lansenger config set redirect_uri http://localhost:8765   # OAuth2 回调地址（默认值）
+lansenger config set redirect_uri http://localhost:8765   # OAuth2 redirect URI (default)
 ```
 
-**回调接收（需要解析/验签回调 Webhook 时填写）**：
+**Callback receiver (fill in when you need to parse/verify webhook callbacks)**:
 
 ```bash
 lansenger config set encoding_key YOUR_ENCODING_KEY
 lansenger config set callback_token YOUR_CALLBACK_TOKEN
 ```
 
-也可以通过环境变量配置（适合 CI/CD 或临时使用）：
+You can also configure via environment variables (CI/CD friendly):
 
 ```bash
 export LANSENGER_APP_ID=YOUR_APP_ID
@@ -57,332 +59,332 @@ export LANSENGER_ENCODING_KEY=YOUR_ENCODING_KEY
 export LANSENGER_CALLBACK_TOKEN=YOUR_CALLBACK_TOKEN
 ```
 
-### 2. 查看配置
+### 2. View Configuration
 
 ```bash
 lansenger config show
 ```
 
-### 3. 健康检查
+### 3. Health Check
 
-验证凭证是否正确、能否成功获取 app token：
+Verify credentials are correct and app token can be obtained:
 
 ```bash
 lansenger health check
 ```
 
-## 命令总览
+## Command Overview
 
-| 命令组 | 说明 | 子命令 |
+| Group | Description | Subcommands |
 |--------|------|--------|
-| `config` | 管理凭证配置 | `set`, `show`, `clear`, `list-profiles` |
-| `message` | 发送与管理消息 | `send-text`, `send-markdown`, `send-file`, `send-image-url`, `send-link-card`, `send-app-articles`, `send-app-card`, `send-oacard`, `send-bot-message`, `send-group-message`, `send-account-message`, `send-user-message`, `update-dynamic-card`, `revoke`, `query-groups`, `send-reminder` |
-| `group` | 管理群组 | `create`, `info`, `members`, `list`, `check`, `update`, `update-members`, `dismiss` |
-| `staff` | 查询人员信息 | `basic-info`, `detail`, `ancestors`, `id-mapping`, `org-extra-fields`, `search`, `org-info` |
-| `department` | 查询部门信息 | `detail`, `children`, `staffs` |
-| `calendar` | 日程操作 | `primary`, `create-schedule`, `fetch-schedule`, `delete-schedule`, `list-schedules`, `attendees`, `add-attendees`, `delete-attendees`, `update-schedule`, `attendee-meta` |
-| `todo` | 待办任务管理 | `create`, `update`, `update-status`, `delete`, `list`, `fetch-by-id`, `fetch-by-source`, `status-counts`, `executor-status`, `add-executors`, `delete-executors`, `executor-list` |
-| `oauth` | OAuth2 用户认证 | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
-| `callback` | 回调事件解析 | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
-| `media` | 媒体文件操作 | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
-| `streaming` | 流式消息（AI 场景） | `create`, `fetch` |
-| `chat` | 会话与消息记录 | `list`, `messages` |
-| `health` | 连接健康检查 | `check` |
+| `config` | Manage credentials | `set`, `show`, `clear`, `list-profiles` |
+| `message` | Send & manage messages | `send-text`, `send-markdown`, `send-file`, `send-image-url`, `send-link-card`, `send-app-articles`, `send-app-card`, `send-oacard`, `send-bot-message`, `send-group-message`, `send-account-message`, `send-user-message`, `update-dynamic-card`, `revoke`, `query-groups`, `send-reminder` |
+| `group` | Manage groups | `create`, `info`, `members`, `list`, `check`, `update`, `update-members`, `dismiss` |
+| `staff` | Query staff info | `basic-info`, `detail`, `ancestors`, `id-mapping`, `org-extra-fields`, `search`, `org-info` |
+| `department` | Query department info | `detail`, `children`, `staffs` |
+| `calendar` | Calendar & schedule | `primary`, `create-schedule`, `fetch-schedule`, `delete-schedule`, `list-schedules`, `attendees`, `add-attendees`, `delete-attendees`, `update-schedule`, `attendee-meta` |
+| `todo` | Todo task management | `create`, `update`, `update-status`, `delete`, `list`, `fetch-by-id`, `fetch-by-source`, `status-counts`, `executor-status`, `add-executors`, `delete-executors`, `executor-list` |
+| `oauth` | OAuth2 user auth | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
+| `callback` | Callback event parsing | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
+| `media` | Media file operations | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
+| `streaming` | Streaming messages (AI) | `create`, `fetch` |
+| `chat` | Conversations & messages | `list`, `messages` |
+| `health` | Connection health check | `check` |
 
-## 常用示例
+## Common Examples
 
-### 发送消息
+### Messaging
 
 ```bash
-# 发送文本消息
+# Send plain text
 lansenger message send-text chat123 "Hello World"
 
-# 发送 Markdown 消息
+# Send markdown
 lansenger message send-markdown chat123 "**Bold** text"
 
-# 发送文件
+# Send file
 lansenger message send-file chat123 /path/to/file.pdf
 
-# 发送带图片 URL 的消息
+# Send image from URL
 lansenger message send-image-url chat123 https://example.com/photo.jpg
 
-# 发送链接卡片
-lansenger message send-link-card chat123 "公告标题" https://example.com --desc "点击查看详情"
+# Send link card
+lansenger message send-link-card chat123 "Announcement" https://example.com --desc "Click for details"
 
-# 发送应用卡片
-lansenger message send-app-card chat123 "卡片标题" --content "正文内容" --card-link https://example.com
+# Send app card
+lansenger message send-app-card chat123 "Card Title" --content "Body text" --card-link https://example.com
 
-# 发送多条图文（appArticles）
-lansenger message send-app-articles chat123 '{"title":"文章1","url":"https://a.com"}' '{"title":"文章2","url":"https://b.com"}'
+# Send app articles
+lansenger message send-app-articles chat123 '{"title":"Article 1","url":"https://a.com"}' '{"title":"Article 2","url":"https://b.com"}'
 
-# 发送 OA 审批卡片
-lansenger message send-oacard chat123 "审批标题" --head "审批通知" --field '{"key":"申请人","value":"张三"}' --link https://app.com/approve
+# Send OA approval card
+lansenger message send-oacard chat123 "Approval Title" --head "Notification" --field '{"key":"Applicant","value":"John"}'
 
-# 群内发送并 @all
-lansenger message send-text group123 "全员通知" --group --mention-all
+# Send in group with @all
+lansenger message send-text group123 "Announcement" --group --mention-all
 
-# 群内 @指定人
-lansenger message send-text group123 "请查看" --group --mention staff001 --mention staff002
+# @mention specific people in group
+lansenger message send-text group123 "Please check" --group --mention staff001
 
-# 机器人通道发送消息
-lansenger message send-bot-message text '{"content":"通知内容"}' --chat-id user001 --chat-id user002
+# Bot channel broadcast
+lansenger message send-bot-message text '{"content":"Notice"}' --chat-id user001 --chat-id user002
 
-# 群消息通道发送（user_token 可选，无则显示为 bot）
-lansenger message send-group-message group123 text '{"content":"群消息"}'
+# Group message channel (user_token optional, shows as bot without it)
+lansenger message send-group-message group123 text '{"content":"Group message"}'
 
-# 以人类用户身份发送（需要 user_token）
-lansenger message send-group-message group123 text '{"content":"群消息"}' --user-token YOUR_USER_TOKEN --sender-id staff001
+# Send as human user (requires user_token)
+lansenger message send-group-message group123 text '{"content":"Group message"}' --user-token YOUR_USER_TOKEN --sender-id staff001
 
-# 应用账号通道发送
-lansenger message send-account-message text '{"content":"账号消息"}' --chat-id user001 --account-id acct001
+# Public account channel
+lansenger message send-account-message text '{"content":"Account message"}' --chat-id user001 --account-id acct001
 
-# 用户通道发送（需要 user_token）
-lansenger message send-user-message user001 text '{"content":"私聊消息"}' --user-token YOUR_USER_TOKEN
+# User channel (requires user_token)
+lansenger message send-user-message user001 text '{"content":"Private message"}' --user-token YOUR_USER_TOKEN
 
-# 撤回消息
+# Revoke messages
 lansenger message revoke msg001 msg002
 
-# 发送提醒
+# Send reminder
 lansenger message send-reminder msg001 --type 1 --type 2 --user staff001 --user staff002
 
-# 查询群 ID 列表
+# Query group ID list
 lansenger message query-groups --page 1 --size 100
 ```
 
-### 群组管理
+### Group Management
 
 ```bash
-# 创建群组
-lansenger group create "项目群" org001 --staff staff001 --staff staff002
+# Create group
+lansenger group create "Project Group" org001 --staff staff001 --staff staff002
 
-# 查看群信息
+# View group info
 lansenger group info group123
 
-# 查看群成员
+# View group members
 lansenger group members group123
 
-# 查看群列表（bot 可查看所在的群，传 user_token 可查看用户所在的群）
+# View group list (bot can list groups it belongs to)
 lansenger group list
 
-# 查看用户所在的群列表（需要 user_token）
+# View group list as user (requires user_token)
 lansenger group list --user-token YOUR_USER_TOKEN
 
-# 检查用户是否在群内
+# Check if user is in group
 lansenger group check group123 --staff-id staff001
 
-# 更新群信息
-lansenger group update group123 --name "新名称" --desc "新描述"
+# Update group info
+lansenger group update group123 --name "New Name" --desc "New Description"
 
-# 添加/移除成员
+# Add/remove members
 lansenger group update-members group123 --add staff003 --remove staff001
 ```
 
-### 人员查询
+### Staff Query
 
 ```bash
-# 查看人员基本信息
+# Basic staff info
 lansenger staff basic-info staff001
 
-# 查看人员详细信息
+# Detailed staff info
 lansenger staff detail staff001
 
-# 搜索人员
-lansenger staff search 张三
+# Search staff
+lansenger staff search ZhangSan
 
-# 手机号/邮箱映射 staff ID
+# ID mapping (phone/email → staffId)
 lansenger staff id-mapping org001 phone 13800138000
 
-# 查看组织信息
+# Organization info
 lansenger staff org-info org001
 ```
 
-### 部门查询
+### Department Query
 
 ```bash
-# 查看部门详情
+# Department detail
 lansenger department detail dept001
 
-# 查看子部门
+# Department children
 lansenger department children dept001
 
-# 查看部门内人员
+# Department staff
 lansenger department staffs dept001
 ```
 
-### 会话与消息记录
+### Conversations & Messages
 
 ```bash
-# 获取会话列表（需要 user_token）
+# Get chat list (requires user_token)
 lansenger chat list --user-token YOUR_USER_TOKEN
 
-# 只看群聊
+# Group chats only
 lansenger chat list --type 2 --user-token YOUR_USER_TOKEN
 
-# 搜索会话（关键词）
-lansenger chat list --keyword 张三 --user-token YOUR_USER_TOKEN
+# Search chats by keyword
+lansenger chat list --keyword ZhangSan --user-token YOUR_USER_TOKEN
 
-# 获取私聊消息记录
+# Get private chat messages
 lansenger chat messages --staff-id staff001 --user-token YOUR_USER_TOKEN
 
-# 获取群聊消息记录（bot 可直接获取所在群的消息）
+# Get group chat messages (bot can fetch messages of groups it's in)
 lansenger chat messages --group-id group123
 
-# 获取群聊消息记录（以用户身份，需要 user_token）
+# Get group chat messages as user (requires user_token)
 lansenger chat messages --group-id group123 --user-token YOUR_USER_TOKEN
 ```
 
-### 日程操作
+### Calendar
 
 ```bash
-# 获取主日历
+# Get primary calendar
 lansenger calendar primary --user-token YOUR_USER_TOKEN
 
-# 创建日程（start/end 为秒级时间戳）
-lansenger calendar create-schedule cal001 "周会" 1747539600 1747543200 \
+# Create schedule (start/end are Unix timestamps in seconds)
+lansenger calendar create-schedule cal001 "Weekly Meeting" 1747539600 1747543200 \
   '[{"staffId":"staff001","attendeeFlag":"yes"}]' \
-  --desc "每周例会" --user-token YOUR_USER_TOKEN
+  --desc "Weekly standup" --user-token YOUR_USER_TOKEN
 
-# 查看日程列表（start/end 为秒级时间戳）
+# List schedules
 lansenger calendar list-schedules cal001 1747539600 1747603200 --user-token YOUR_TOKEN
 
-# 查看日程详情
+# View schedule detail
 lansenger calendar fetch-schedule cal001 schedule001 --user-token YOUR_TOKEN
 
-# 删除日程
+# Delete schedule
 lansenger calendar delete-schedule cal001 schedule001 --user-token YOUR_TOKEN
 ```
 
-### 待办任务
+### Todo Tasks
 
 ```bash
-# 创建待办
-lansenger todo create "审批文档" https://app.com/doc https://app.com/doc \
-  "staff001,staff002" org001 --desc "请审批" --type 2
+# Create todo
+lansenger todo create "Approve Document" https://app.com/doc https://app.com/doc \
+  "staff001,staff002" org001 --desc "Please review" --type 2
 
-# 更新待办状态（11=待阅, 12=已阅, 21=待办, 22=已办）
+# Update todo status (11=unread, 12=read, 21=pending, 22=done)
 lansenger todo update-status task001 22 org001
 
-# 更新执行人状态
+# Update executor status
 lansenger todo executor-status '[{"executorId":"staff001","status":"22"}]' org001 --task-id task001
 
-# 查看待办列表
+# List todos
 lansenger todo list org001 --status 21,22
 
-# 删除待办
+# Delete todo
 lansenger todo delete task001 org001
 ```
 
-### OAuth2 用户认证
+### OAuth2 User Auth
 
 ```bash
-# 生成授权 URL
+# Build authorize URL
 lansenger oauth authorize-url https://yourapp.com/callback --scope basic_userinfor
 
-# 交换 code 获取 user token
+# Exchange code for user token
 lansenger oauth exchange-code AUTH_CODE --redirect-uri https://yourapp.com/callback
 
-# 刷新 user token
+# Refresh user token
 lansenger oauth refresh-token YOUR_REFRESH_TOKEN
 
-# 获取用户信息
+# Fetch user info
 lansenger oauth user-info YOUR_USER_TOKEN
 
-# 解析 OAuth2 回调 URL 参数
+# Parse OAuth2 callback URL
 lansenger oauth parse-callback "code=xxx&state=yyy"
 
-# 验证回调 state 参数
+# Validate callback state
 lansenger oauth validate-state yyy yyy
 ```
 
-### 回调事件
+### Callback Events
 
 ```bash
-# 查看所有回调事件类型
+# List all callback event types
 lansenger callback event-types
 
-# 解析回调数据
+# Parse callback payload
 lansenger callback parse-payload ENCRYPTED_DATA --encoding-key YOUR_KEY
 
-# 解密回调数据（仅解密不解析）
+# Decrypt callback payload
 lansenger callback decrypt-payload ENCRYPTED_DATA --encoding-key YOUR_KEY
 
-# 验证签名
+# Verify signature
 lansenger callback verify-signature TIMESTAMP NONCE SIGNATURE --encoding-key YOUR_KEY
 ```
 
-### 媒体文件
+### Media Files
 
 ```bash
-# 上传文件
+# Upload file
 lansenger media upload /path/to/file.pdf --media-type 3
 
-# 上传应用/机器人媒体文件
+# Upload app/bot media file
 lansenger media upload-app /path/to/file.pdf --media-type file
 
-# 下载媒体文件到本地
+# Download media to local file
 lansenger media download-to-file MEDIA_ID --output /path/to/save.pdf
 ```
 
-### 流式消息
+### Streaming Messages
 
 ```bash
-# 创建流式消息（用于 AI agent 渐进式输出）
+# Create streaming message (for AI agent progressive output)
 lansenger streaming create user123 single stream-session-001
 
-# 获取流式消息状态
+# Get streaming message status
 lansenger streaming fetch MSG_ID
 ```
 
-## 全局选项
+## Global Options
 
-| 选项 | 说明 |
+| Option | Description |
 |------|------|
-| `--json` / `-j` | 输出原始 JSON 格式而非表格 |
-| `--profile` / `-P` | 指定凭证 profile（默认 `default`） |
+| `--json` / `-j` | Output raw JSON instead of formatted tables |
+| `--profile` / `-P` | Use a specific credential profile (default: `default`) |
 
 ```bash
-# JSON 格式输出（便于脚本处理）
+# JSON output (useful for scripting)
 lansenger -j staff basic-info staff001
 
-# 使用指定 profile
+# Use specific profile
 lansenger -P my-bot message send-text chat123 "Hello"
 ```
 
-## 多应用/多机器人配置（Profile）
+## Multi-app / Multi-bot Profiles
 
-CLI 支持多 profile，每个 profile 对应一个 appID（一个应用或一个机器人），凭证互相隔离：
+CLI supports multiple profiles, each corresponding to one appID, with isolated credentials:
 
 ```bash
-# 配置第一个应用（个人机器人）
+# Configure first app (personal bot)
 lansenger config set app_id xxx1 --profile my-bot
 lansenger config set app_secret xxx1 --profile my-bot
 
-# 配置第二个应用（蓝信应用）
+# Configure second app (Lansenger app)
 lansenger config set app_id xxx2 --profile my-app
 lansenger config set app_secret xxx2 --profile my-app
 lansenger config set encoding_key yyy2 --profile my-app
 lansenger config set callback_token zzz2 --profile my-app
 
-# 切换应用执行命令
+# Run commands with specific profile
 lansenger -P my-bot message send-text chat123 "Hello"
 lansenger -P my-app callback parse-payload DATA
 
-# 查看所有已配置 profile
+# List all configured profiles
 lansenger config list-profiles
 
-# 查看某个 profile 详情
+# View a profile's details
 lansenger config show --profile my-app
 ```
 
-## 凭证安全
+## Security
 
-- 凭证按 profile 隔离存储在 `~/.lansenger/sdk_state.json`，文件权限 0600
-- `config show` 对所有密钥类字段脱敏显示（`***`），仅 `api_gateway_url` 和 `passport_url` 明文展示
-- 支持环境变量 `LANSENGER_APP_ID` / `LANSENGER_APP_SECRET` / `LANSENGER_ENCODING_KEY` / `LANSENGER_CALLBACK_TOKEN`，适合 CI/CD 场景
+- Credentials stored per profile in `~/.lansenger/sdk_state.json` with `0600` permissions
+- `config show` masks all secret fields (`***`), only `api_gateway_url` and `passport_url` shown in plaintext
+- Environment variables `LANSENGER_APP_ID` / `LANSENGER_APP_SECRET` / `LANSENGER_ENCODING_KEY` / `LANSENGER_CALLBACK_TOKEN` supported for CI/CD
 
-## CLI 兼容性
+## CLI Compatibility
 
-本 TS 版 CLI 与 Python 版、Go 版命令语法完全一致：
+This TS CLI shares the same command syntax as the Python and Go versions:
 
 ```bash
 # Python CLI
@@ -394,14 +396,14 @@ go install github.com/lansenger-pm/lansenger-sdk-go/cmd/lansenger@latest
 # TypeScript CLI
 npm install -g lansenger-cli
 
-# 三者使用相同的命令语法
+# All three use the same command syntax
 lansenger message send-text chat123 "Hello"
 ```
 
-## 与 SDK 的关系
+## Relationship with SDK
 
-本 CLI 基于 [lansenger-sdk-ts](https://github.com/lansenger-pm/lansenger-sdk-ts) 的 `LansengerClient` 实现，覆盖 SDK 全部 API，不修改 SDK 代码。
+This CLI is built on [lansenger-sdk-ts](https://github.com/lansenger-pm/lansenger-sdk-ts)'s `LansengerClient`, covering all SDK APIs without modifying the SDK.
 
-## 许可证
+## License
 
 MIT License
