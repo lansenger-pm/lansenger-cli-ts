@@ -13,6 +13,8 @@ npm install -g lansenger-cli
 或从源码安装：
 
 ```bash
+git clone https://github.com/lansenger-pm/lansenger-cli-ts.git
+cd lansenger-cli-ts
 npm install
 npm run build
 npm link
