@@ -10,7 +10,7 @@ export function registerMessageCommands(program: Command) {
     .argument("<chatId>", "Chat ID (user/group)")
     .argument("<content>", "Text content")
     .option("-f, --file <path>", "File path to attach", "")
-    .option("-t, --media-type <type>", "1=video, 2=image, 3=file (auto-detected if omitted)")
+    .option("-t, --media-type <type>", "file, video, image, audio (auto-detected if omitted)")
     .option("--cover-image <path>", "Cover image path for video attachments", "")
     .option("-g, --group", "Send as group message", false)
     .option("--mention-all", "@all in group", false)
@@ -21,7 +21,7 @@ export function registerMessageCommands(program: Command) {
       const client = getClient();
       const result = await client.sendText(chatId, content, {
         file_path: opts.file || undefined,
-        media_type: opts.mediaType ? parseInt(opts.mediaType) : undefined,
+        media_type: opts.mediaType || undefined,
         cover_image_path: opts.coverImage || undefined,
         is_group: opts.group,
         reminder_all: opts.mentionAll,
@@ -62,7 +62,7 @@ export function registerMessageCommands(program: Command) {
     .argument("<chatId>", "Chat ID")
     .argument("<filePath>", "Local file path")
     .option("-c, --content <content>", "Content/caption text", "")
-    .option("--media-type <type>", "1=video, 2=image, 3=file")
+    .option("--media-type <type>", "file, video, image, audio")
     .option("--cover-image <path>", "Cover image path for video attachments", "")
     .option("-g, --group", "Send as group message", false)
     .option("--user-token <token>", "User token for private channel", "")
@@ -71,7 +71,7 @@ export function registerMessageCommands(program: Command) {
       const client = getClient();
       const result = await client.sendFile(chatId, filePath, {
         caption: opts.content || undefined,
-        media_type: opts.mediaType ? parseInt(opts.mediaType) : undefined,
+        media_type: opts.mediaType || undefined,
         cover_image_path: opts.coverImage || undefined,
         is_group: opts.group,
         user_token: opts.userToken || undefined,
