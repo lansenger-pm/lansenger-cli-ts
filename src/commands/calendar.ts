@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError, parseJsonOption, commaList } from "../utils";
+import { getClient, outputResult, outputList, checkError, parseJsonOption } from "../utils";
 
 export function registerCalendarCommands(program: Command) {
   const cmd = program.command("calendar").description("Calendar and schedule operations");
@@ -16,7 +16,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["calendar_id", "summary", "description", "permissions", "role"], "Primary Calendar");
     });
 
   cmd
@@ -61,7 +61,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["schedule_id"], "Create Schedule Result");
     });
 
   cmd
@@ -78,7 +78,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["schedule_id", "summary", "description", "all_day", "start_time", "end_time", "creator", "rsvp_status"], "Schedule Info");
     });
 
   cmd
@@ -95,7 +95,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["schedule_id"], "Delete Schedule Result");
     });
 
   cmd
@@ -113,7 +113,13 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      if (result.success && result.schedule_list && result.schedule_list.length > 0) {
+        outputList(result.schedule_list, ["Schedule ID", "Summary"], (s: any) => [
+          s.schedule_id || "", s.summary || "",
+        ]);
+      } else {
+        outputResult(result, undefined, "Schedule List");
+      }
     });
 
   cmd
@@ -134,7 +140,7 @@ export function registerCalendarCommands(program: Command) {
         page_size: parseInt(opts.size),
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total"], "Schedule Attendees");
     });
 
   cmd
@@ -155,7 +161,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["schedule_id"], "Add Attendees Result");
     });
 
   cmd
@@ -176,7 +182,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["schedule_id"], "Delete Attendees Result");
     });
 
   cmd
@@ -219,7 +225,7 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["schedule_ids"], "Update Schedule Result");
     });
 
   cmd
@@ -247,6 +253,6 @@ export function registerCalendarCommands(program: Command) {
         user_id: opts.userId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, undefined, "Update Attendee Meta Result");
     });
 }

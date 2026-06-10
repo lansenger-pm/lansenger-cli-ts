@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError, parseJsonOption } from "../utils";
+import { getClient, outputResult, outputList, checkError, parseJsonOption } from "../utils";
 
 export function registerMessageCommands(program: Command) {
   const cmd = program.command("message").description("Send and manage messages");
@@ -30,7 +30,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send Text Result");
     });
 
   cmd
@@ -53,7 +53,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send Markdown Result");
     });
 
   cmd
@@ -78,7 +78,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send File Result");
     });
 
   cmd
@@ -99,7 +99,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send Image Result");
     });
 
   cmd
@@ -131,7 +131,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send Link Card Result");
     });
 
   cmd
@@ -151,7 +151,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send App Articles Result");
     });
 
   cmd
@@ -206,7 +206,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send App Card Result");
     });
 
   cmd
@@ -233,7 +233,7 @@ export function registerMessageCommands(program: Command) {
         links: parsedLinks,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","operation"], "Update Dynamic Card Result");
     });
 
   cmd
@@ -249,7 +249,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","operation"], "Revoke Message Result");
     });
 
   cmd
@@ -271,7 +271,7 @@ export function registerMessageCommands(program: Command) {
         is_group: opts.group,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "Bot Message Result");
     });
 
   cmd
@@ -298,7 +298,7 @@ export function registerMessageCommands(program: Command) {
         entry_id: opts.entryId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "Group Message Result");
     });
 
   cmd
@@ -313,7 +313,10 @@ export function registerMessageCommands(program: Command) {
         page_size: parseInt(opts.size),
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total_group_ids","operation"], "Query Groups Result");
+      if (result.success && result.group_ids && result.group_ids.length > 0) {
+        outputList(result.group_ids.map((id: string) => ({ group_id: id })), ["Group ID"], (g: any) => [g.group_id]);
+      }
     });
 
   cmd
@@ -350,7 +353,7 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send OA Card Result");
     });
 
   cmd
@@ -374,7 +377,7 @@ export function registerMessageCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "Account Message Result");
     });
 
   cmd
@@ -396,7 +399,7 @@ export function registerMessageCommands(program: Command) {
         uuid: opts.uuid || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "User Message Result");
     });
 
   cmd
@@ -411,6 +414,6 @@ export function registerMessageCommands(program: Command) {
       const userIdList = opts.user || [];
       const result = await client.sendReminderMsg(msgId, reminderTypes, userIdList);
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["operation"], "Send Reminder Result");
     });
 }

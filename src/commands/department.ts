@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError } from "../utils";
+import { getClient, outputResult, outputList, checkError } from "../utils";
 
 export function registerDepartmentCommands(program: Command) {
   const cmd = program.command("department").description("Query department information");
@@ -17,7 +17,7 @@ export function registerDepartmentCommands(program: Command) {
         tag_id: opts.tagId || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["id", "name", "parent_id", "has_children", "normal_members", "inactive_members"], "Department Detail");
     });
 
   cmd
@@ -29,7 +29,13 @@ export function registerDepartmentCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchDepartmentChildren(departmentId, { user_token: opts.userToken || undefined });
       checkError(result);
-      outputResult(result);
+      if (result.success && result.departments) {
+        outputList(result.departments, ["ID", "Name", "Parent ID", "Has Children"], (d: any) => [
+          d.id || "", d.name || "", d.parent_id || "", String(d.has_children || ""),
+        ]);
+      } else {
+        outputResult(result, undefined, "Department Children");
+      }
     });
 
   cmd
@@ -47,6 +53,13 @@ export function registerDepartmentCommands(program: Command) {
         page_size: parseInt(opts.size),
       });
       checkError(result);
-      outputResult(result);
+      if (result.success && result.staffs) {
+        outputResult(result, ["has_more", "total"], "Department Staffs");
+        outputList(result.staffs, ["Staff ID", "Name", "Gender"], (s: any) => [
+          s.staff_id || "", s.name || "", s.gender || "",
+        ]);
+      } else {
+        outputResult(result);
+      }
     });
 }

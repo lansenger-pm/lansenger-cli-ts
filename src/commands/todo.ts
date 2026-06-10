@@ -27,7 +27,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Create Todo Result");
     });
 
   cmd
@@ -47,7 +47,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Update Todo Result");
     });
 
   cmd
@@ -65,7 +65,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Update Todo Status Result");
     });
 
   cmd
@@ -82,7 +82,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Delete Todo Result");
     });
 
   cmd
@@ -104,7 +104,7 @@ export function registerTodoCommands(program: Command) {
         status_list: statusListParsed,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total"], "Todo Task List");
     });
 
   cmd
@@ -121,7 +121,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id","source_id","title","desc","status","type","link","executor_ids"], "Todo Task");
     });
 
   cmd
@@ -138,7 +138,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id","source_id","title","desc","status","type","link","executor_ids"], "Todo Task");
     });
 
   cmd
@@ -158,7 +158,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["status_counts"], "Todo Status Counts");
     });
 
   cmd
@@ -176,7 +176,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Update Executor Status Result");
     });
 
   cmd
@@ -194,7 +194,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Add Executors Result");
     });
 
   cmd
@@ -212,7 +212,7 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["todotask_id"], "Delete Executors Result");
     });
 
   cmd
@@ -232,6 +232,6 @@ export function registerTodoCommands(program: Command) {
         user_token: opts.userToken || undefined,
       });
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["total"], "Executor List");
     });
 }

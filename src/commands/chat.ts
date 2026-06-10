@@ -44,7 +44,7 @@ export function registerChatCommands(program: Command) {
       });
       checkError(result);
       if (result.success) {
-        outputResult(result);
+        outputResult(result, [], "Chat List");
         if (result.staff_infos) {
           outputList(result.staff_infos, ["Staff ID", "Name", "Sectors"], (s: any) => [
             s.staff_id || "", s.staff_name || "", String(s.sector_names || ""),
@@ -89,7 +89,7 @@ export function registerChatCommands(program: Command) {
         });
         checkError(result);
         if (result.success) {
-          outputResult(result);
+          outputResult(result, ["has_more", "total", "last_version", "name", "chat_type"], "Chat Messages");
           if (result.messages) {
             outputList(result.messages, ["Time", "Sender", "Type"], (m: any) => [
               m.send_time || "", m.sender || "", m.message_type || "",

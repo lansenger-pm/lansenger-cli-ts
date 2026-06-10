@@ -14,7 +14,7 @@ export function registerStreamingCommands(program: Command) {
       const client = getClient();
       const result = await client.createStreamMessage(receiverId, receiverType, streamId);
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "Create Stream Message Result");
     });
 
   cmd
@@ -25,6 +25,6 @@ export function registerStreamingCommands(program: Command) {
       const client = getClient();
       const result = await client.fetchStreamMessage(msgId);
       checkError(result);
-      outputResult(result);
+      outputResult(result, ["message_id"], "Fetch Stream Message Result");
     });
 }
