@@ -5,14 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.3] - 2026-06-10
+## [1.3.4] - 2026-06-10
 
 ### Added
 - `redirect_uri` config key support — `config set redirect_uri` / `config show` / passed to `saveCredentials`
 - `staff_id` persistence — `refresh-token` and `local-callback` pass `staff_id` to `saveUserToken`
 
-### Changed
-- SDK dependency updated to `lansenger-sdk-ts@^1.3.2` (has rebuilt dist/)
+### Fixed
+- Fix `staff_id ?? undefined` to resolve `string | null` → `string | undefined` TS strict error
+
+## [1.3.3] — Skipped (had TS strict null error)
 
 ## [1.3.2] — Skipped (wrong SDK types)
 
