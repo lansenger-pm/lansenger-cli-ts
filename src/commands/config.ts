@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { CredentialStore } from "lansenger-sdk-ts";
 import { outputResult, activeProfile } from "../utils";
 
-const VALID_KEYS = ["app_id", "app_secret", "api_gateway_url", "passport_url", "encoding_key", "callback_token"];
+const VALID_KEYS = ["app_id", "app_secret", "api_gateway_url", "passport_url", "encoding_key", "callback_token", "redirect_uri"];
 
 export function registerConfigCommands(program: Command) {
   const cmd = program.command("config").description("Manage CLI configuration and credentials");
@@ -29,6 +29,7 @@ export function registerConfigCommands(program: Command) {
         creds.passport_url || "",
         creds.encoding_key || "",
         creds.callback_token || "",
+        creds.redirect_uri || "",
       );
       outputResult({ success: true, message: `Set ${key} = ${value}`, profile: p });
     });
@@ -48,6 +49,7 @@ export function registerConfigCommands(program: Command) {
         passport_url: creds.passport_url,
         encoding_key: creds.encoding_key ? "***" : "(empty)",
         callback_token: creds.callback_token ? "***" : "(empty)",
+        redirect_uri: creds.redirect_uri,
         profile: p,
         has_credentials: store.hasFullConfig(),
         store_path: store.path,

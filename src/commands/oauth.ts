@@ -56,7 +56,7 @@ export function registerOauthCommands(program: Command) {
         const store = getStore();
         const existing = store.loadUserToken();
         const rt = result.refresh_token || existing.refresh_token || "";
-        store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0);
+        store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0, result.staff_id);
       }
       outputResult(result, ["user_token", "expires_in", "refresh_token", "staff_id"], "Refresh Token Result");
     });
@@ -194,7 +194,7 @@ export function registerOauthCommands(program: Command) {
           const store = getStore();
           const existing = store.loadUserToken();
           const rt = exchangeResult.refresh_token || existing.refresh_token || "";
-          store.saveUserToken(exchangeResult.user_token, rt, exchangeResult.expires_in || 0, undefined, exchangeResult.refresh_expires_in || 0);
+          store.saveUserToken(exchangeResult.user_token, rt, exchangeResult.expires_in || 0, undefined, exchangeResult.refresh_expires_in || 0, exchangeResult.staff_id);
         }
         outputResult(exchangeResult);
       } else {
