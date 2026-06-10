@@ -112,14 +112,6 @@ export function registerOauthCommands(program: Command) {
       const client = getClient();
       const authUrl = client.buildAuthorizeUrl(redirectUri, { scope, state });
 
-      if (jsonOutput) {
-        console.log(JSON.stringify({ authorize_url: authUrl, redirect_uri: redirectUri, port }, null, 2));
-      } else {
-        console.log(`Authorize URL:\n${authUrl}`);
-        console.log(`\nWaiting for callback on port ${port}... (timeout: ${timeout}s)`);
-        console.log("Open the URL above in a browser, authorize, then wait.");
-      }
-
       const callbackResult: { value: CallbackResult | null } = { value: null };
 
       const server = http.createServer((req, res) => {
@@ -144,6 +136,8 @@ export function registerOauthCommands(program: Command) {
       });
 
       // Start listening — Node.js http.createServer does not bind until listen() is called.
+      // IMPORTANT: Server must be started BEFORE printing the authorize URL.
+      // If server fails to start (e.g., port in use), user should NOT see the URL.
       await new Promise<void>((resolve, reject) => {
         server.on("error", (err: NodeJS.ErrnoException) => {
           if (err.code === "EADDRINUSE") {
@@ -154,6 +148,15 @@ export function registerOauthCommands(program: Command) {
         });
         server.listen(port, "localhost", () => resolve());
       });
+
+      // Print authorize URL AFTER server is successfully started
+      if (jsonOutput) {
+        console.log(JSON.stringify({ authorize_url: authUrl, redirect_uri: redirectUri, port }, null, 2));
+      } else {
+        console.log(`Authorize URL:\n${authUrl}`);
+        console.log(`\nWaiting for callback on port ${port}... (timeout: ${timeout}s)`);
+        console.log("Open the URL above in a browser, authorize, then wait.");
+      }
 
       const startTime = Date.now();
       while (callbackResult.value === null && (Date.now() - startTime) < timeout * 1000) {
