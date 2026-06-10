@@ -124,7 +124,7 @@ lansenger message send-text group123 "Annonce" --group --mention-all
 # @mention spécifique
 lansenger message send-text group123 "Veuillez vérifier" --group --mention staff001
 
-# Diffusion via le canal bot
+# Diffusion via le canal robot
 lansenger message send-bot-message text '{"content":"Avis"}' --chat-id user001 --chat-id user002
 
 # Canal message de groupe (user_token facultatif)
@@ -161,7 +161,7 @@ lansenger group info group123
 # Voir les membres
 lansenger group members group123
 
-# Lister les groupes (bot peut lister ses groupes)
+# Lister les groupes (robot peut lister ses groupes)
 lansenger group list
 
 # Lister en tant qu'utilisateur (nécessite user_token)
@@ -224,7 +224,7 @@ lansenger chat list --keyword ZhangSan --user-token YOUR_USER_TOKEN
 # Messages privés
 lansenger chat messages --staff-id staff001 --user-token YOUR_USER_TOKEN
 
-# Messages de groupe (bot peut récupérer)
+# Messages de groupe (robot peut récupérer)
 lansenger chat messages --group-id group123
 
 # Messages de groupe en tant qu'utilisateur
@@ -316,7 +316,7 @@ lansenger callback verify-signature TIMESTAMP NONCE SIGNATURE --encoding-key YOU
 # Uploader un fichier
 lansenger media upload /path/to/file.pdf --media-type 3
 
-# Uploader un média app/bot
+# Uploader un média app/robot
 lansenger media upload-app /path/to/file.pdf --media-type file
 
 # Télécharger un média
@@ -351,7 +351,7 @@ lansenger -P my-bot message send-text chat123 "Hello"
 ## Profils multi-applications / multi-bots
 
 ```bash
-# Configurer le premier bot
+# Configurer le premier robot
 lansenger config set app_id xxx1 --profile my-bot
 lansenger config set app_secret xxx1 --profile my-bot
 
