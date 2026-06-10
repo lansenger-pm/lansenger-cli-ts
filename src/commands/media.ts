@@ -8,7 +8,7 @@ export function registerMediaCommands(program: Command) {
     .command("upload")
     .description("Upload a media file")
     .argument("<filePath>", "Local file path to upload")
-    .option("-t, --media-type <type>", "1=video, 2=image, 3=file (4.5.1 core service)", "3")
+    .option("-t, --media-type <type>", "1=video, 2=image, 3=audio (4.5.1 core service)", "2")
     .option("--user-token <token>", "User token (optional for 4.5.1)", "")
     .action(async (filePath, opts) => {
       const client = getClient();
