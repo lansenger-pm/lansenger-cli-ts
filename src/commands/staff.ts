@@ -74,10 +74,10 @@ export function registerStaffCommands(program: Command) {
 
   cmd
     .command("search")
-    .description("Search staff by keyword")
-    .argument("<keyword>", "Search keyword")
-    .option("--user-token <token>", "User token", "")
-    .option("--user-id <userId>", "User ID context", "")
+    .description("Search staff by name/phone/email (requires --user-token OR --user-id). Returns: staffId, name, email, mobile, avatar")
+    .argument("<keyword>", "Search keyword (name/phone/email)")
+    .option("--user-token <token>", "User token (one of --user-token or --user-id is required)", "")
+    .option("--user-id <userId>", "User ID context (one of --user-token or --user-id is required)", "")
     .option("-R, --recursive", "Recursive search", true)
     .option("-S, --sector <ids...>", "Sector IDs (space-separated)")
     .option("-p, --page <page>", "Page number")
