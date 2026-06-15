@@ -8,14 +8,14 @@ export let activeProfile = "default";
 export function setJsonOutput(val: boolean) { jsonOutput = val; }
 export function setActiveProfile(val: string) { activeProfile = val; }
 
-export function getStore(profile?: string): CredentialStore {
-  return new CredentialStore(undefined, profile || activeProfile);
+export function getStore(): CredentialStore {
+  return new CredentialStore(undefined, activeProfile);
 }
 
-export function getClient(profile?: string): LansengerClient {
-  const store = getStore(profile);
+export function getClient(): LansengerClient {
+  const store = getStore();
   if (store.hasFullConfig()) {
-    return LansengerClient.fromStore(profile || activeProfile);
+    return LansengerClient.fromStore(activeProfile);
   }
   return LansengerClient.fromEnv();
 }

@@ -32,9 +32,8 @@ export function registerOauthCommands(program: Command) {
     .description("Exchange an authorization code for a user token")
     .argument("<code>", "Authorization code from callback")
     .option("--redirect-uri <uri>", "Redirect URI used in authorize", "")
-    .option("-P, --profile <profile>", "Credential profile (overrides global --profile)", "")
     .action(async (code, opts) => {
-      const client = getClient(opts.profile || undefined);
+      const client = getClient();
       const result = await client.exchangeCode(code, {
         redirect_uri: opts.redirectUri || undefined,
       });
@@ -47,15 +46,14 @@ export function registerOauthCommands(program: Command) {
     .description("Refresh a user token")
     .argument("<refreshToken>", "Refresh token")
     .option("-s, --scope <scope>", "Scope", "")
-    .option("-P, --profile <profile>", "Credential profile (overrides global --profile)", "")
     .action(async (refreshToken, opts) => {
-      const client = getClient(opts.profile || undefined);
+      const client = getClient();
       const result = await client.refreshUserToken(refreshToken, {
         scope: opts.scope || undefined,
       });
       checkError(result);
       if (result.success && result.user_token) {
-        const store = getStore(opts.profile || undefined);
+        const store = getStore();
         const existing = store.loadUserToken();
         const rt = result.refresh_token || existing.refresh_token || "";
         store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0, result.staff_id ?? undefined);
@@ -67,9 +65,8 @@ export function registerOauthCommands(program: Command) {
     .command("user-info")
     .description("Fetch user info using a user token")
     .argument("<userToken>", "User token")
-    .option("-P, --profile <profile>", "Credential profile (overrides global --profile)", "")
-    .action(async (userToken, opts) => {
-      const client = getClient(opts.profile || undefined);
+    .action(async (userToken) => {
+      const client = getClient();
       const result = await client.fetchUserInfoByToken(userToken);
       checkError(result);
       outputResult(result, ["staff_id", "name", "org_id", "org_name", "mobile_phone", "email", "employee_number"], "User Info");
@@ -104,7 +101,6 @@ export function registerOauthCommands(program: Command) {
     .option("--no-exchange", "Do not auto-exchange code")
     .option("-t, --timeout <timeout>", "Max wait seconds for callback", "120")
     .option("--redirect-uri <uri>", "Override redirect_uri (default: http://localhost:<port>)", "")
-    .option("-P, --profile <profile>", "Credential profile (overrides global --profile)", "")
     .action(async (opts) => {
       const port = parseInt(opts.port);
       const scope = opts.scope;
@@ -113,7 +109,7 @@ export function registerOauthCommands(program: Command) {
       const timeout = parseInt(opts.timeout);
       const redirectUri = opts.redirectUri || `http://localhost:${port}`;
 
-      const client = getClient(opts.profile || undefined);
+      const client = getClient();
       const authUrl = client.buildAuthorizeUrl(redirectUri, { scope, state });
 
       const callbackResult: { value: CallbackResult | null } = { value: null };
@@ -195,7 +191,7 @@ export function registerOauthCommands(program: Command) {
         const exchangeResult = await client.exchangeCode(code, { redirect_uri: redirectUri });
         checkError(exchangeResult);
         if (exchangeResult.success && exchangeResult.user_token) {
-          const store = getStore(opts.profile || undefined);
+          const store = getStore();
           const existing = store.loadUserToken();
           const rt = exchangeResult.refresh_token || existing.refresh_token || "";
           store.saveUserToken(exchangeResult.user_token, rt, exchangeResult.expires_in || 0, undefined, exchangeResult.refresh_expires_in || 0, exchangeResult.staff_id ?? undefined);
