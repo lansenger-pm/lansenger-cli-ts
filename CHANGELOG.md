@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.8] - 2026-06-16
+
+### Fixed
+
+- **calendar**: `list-schedules` now correctly accesses `scheduleId` (camelCase) from dict items instead of `schedule_id`.
+- **department**: `children` — fix `Parent ID` column (`ancestorDepartments[0].id` not `parentId`), `Has Children` uses `hasChildren`.
+- **department**: `staffs` — fix `Staff ID` column (`id` not `staffId`), replace nonexistent `Gender` with `Org Name` (`orgName`).
+
 ## [1.3.7] - 2026-06-15
 
 ### Added
