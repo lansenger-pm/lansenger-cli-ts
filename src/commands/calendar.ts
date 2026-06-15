@@ -115,7 +115,7 @@ export function registerCalendarCommands(program: Command) {
       checkError(result);
       if (result.success && result.schedule_list && result.schedule_list.length > 0) {
         outputList(result.schedule_list, ["Schedule ID", "Summary"], (s: any) => [
-          s.schedule_id || "", s.summary || "",
+          s.scheduleId || "", s.summary || "",
         ]);
       } else {
         outputResult(result, undefined, "Schedule List");
