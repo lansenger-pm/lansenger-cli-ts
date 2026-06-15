@@ -31,7 +31,7 @@ export function registerDepartmentCommands(program: Command) {
       checkError(result);
       if (result.success && result.departments) {
         outputList(result.departments, ["ID", "Name", "Parent ID", "Has Children"], (d: any) => [
-          d.id || "", d.name || "", d.parent_id || "", String(d.has_children || ""),
+          d.id || "", d.name || "", d.parentId || "", String(d.hasChildren || ""),
         ]);
       } else {
         outputResult(result, undefined, "Department Children");
@@ -56,7 +56,7 @@ export function registerDepartmentCommands(program: Command) {
       if (result.success && result.staffs) {
         outputResult(result, ["has_more", "total"], "Department Staffs");
         outputList(result.staffs, ["Staff ID", "Name", "Gender"], (s: any) => [
-          s.staff_id || "", s.name || "", s.gender || "",
+          s.staffId || "", s.name || "", s.gender || "",
         ]);
       } else {
         outputResult(result);
