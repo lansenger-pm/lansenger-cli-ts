@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.7] - 2026-06-15
+
+### Added
+
+- **config**: `delete-profile` command to permanently remove a credential profile and all its data. If the deleted profile is the active one, automatically switches to `"default"`.
+
 ## [1.3.6] - 2026-06-12
 
 ### Changed

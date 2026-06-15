@@ -84,4 +84,18 @@ export function registerConfigCommands(program: Command) {
       const active = store.getActiveProfile();
       outputResult({ profiles, active_profile: active });
     });
+
+  cmd
+    .command("delete-profile")
+    .description("Delete a credential profile by name")
+    .argument("<profile>", "Profile name to delete")
+    .action((profile) => {
+      const store = new CredentialStore();
+      if (!store.deleteProfileByName(profile)) {
+        console.error(`Error: Profile '${profile}' does not exist.`);
+        process.exit(1);
+      }
+      const active = store.getActiveProfile();
+      outputResult({ profile, status: "deleted", active_profile: active });
+    });
 }
