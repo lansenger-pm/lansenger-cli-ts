@@ -54,9 +54,7 @@ export function registerOauthCommands(program: Command) {
       checkError(result);
       if (result.success && result.user_token) {
         const store = getStore();
-        const existing = store.loadUserToken();
-        const rt = result.refresh_token || existing.refresh_token || "";
-        store.saveUserToken(result.user_token, rt, result.expires_in || 0, undefined, result.refresh_expires_in || 0, result.staff_id ?? undefined);
+        store.saveUserToken(result.user_token, result.refresh_token || "", result.expires_in || 0, undefined, result.refresh_expires_in || 0, result.staff_id ?? undefined);
       }
       outputResult(result, ["user_token", "expires_in", "refresh_token", "staff_id"], "Refresh Token Result");
     });

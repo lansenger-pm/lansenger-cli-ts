@@ -77,7 +77,7 @@ lansenger health check
 
 | 命令组 | 说明 | 子命令 |
 |--------|------|--------|
-| `config` | 管理凭证配置 | `set`, `show`, `clear`, `list-profiles`, `delete-profile` |
+| `config` | 管理凭证配置 | `set`, `show`, `clear`, `list-profiles`, `delete-profile`, `list-users` |
 | `message` | 发送与管理消息 | `send-text`, `send-markdown`, `send-file`, `send-image-url`, `send-link-card`, `send-app-articles`, `send-app-card`, `send-oacard`, `send-bot-message`, `send-group-message`, `send-account-message`, `send-user-message`, `update-dynamic-card`, `revoke`, `query-groups`, `send-reminder` |
 | `group` | 管理群组 | `create`, `info`, `members`, `list`, `check`, `update`, `update-members`, `dismiss` |
 | `staff` | 查询人员信息 | `basic-info`, `detail`, `ancestors`, `id-mapping`, `org-extra-fields`, `search`, `org-info` |
@@ -341,6 +341,7 @@ lansenger streaming fetch MSG_ID
 |------|------|
 | `--json` / `-j` | 输出原始 JSON 格式而非表格 |
 | `--profile` / `-P` | 指定凭证 profile（默认 `default`） |
+| `--as <staff_id>` | 从凭证存储中自动加载并自动刷新指定 staff_id 的 user token |
 
 ```bash
 # JSON 格式输出（便于脚本处理）

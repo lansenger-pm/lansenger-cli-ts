@@ -98,4 +98,30 @@ export function registerConfigCommands(program: Command) {
       const active = store.getActiveProfile();
       outputResult({ profile, status: "deleted", active_profile: active });
     });
+
+  cmd
+    .command("list-users")
+    .description("List all users with stored user tokens in the current profile")
+    .option("-P, --profile <profile>", "Profile name (overrides global --profile)")
+    .option("-T, --show-tokens", "Show user tokens (security warning)", false)
+    .action((opts) => {
+      const p = opts.profile || activeProfile;
+      const store = new CredentialStore(undefined, p);
+      const users = store.listUserTokens();
+      if (opts.showTokens) {
+        const tokens: Record<string, Record<string, string | number>> = {};
+        for (const staffId of users) {
+          const tokenData = store.loadUserToken(staffId);
+          tokens[staffId] = {
+            user_token: tokenData.user_token || "",
+            refresh_token: tokenData.refresh_token || "",
+            expires_in: tokenData.expires_in || 0,
+            refresh_expires_in: tokenData.refresh_expires_in || 0,
+          };
+        }
+        outputResult({ profile: p, users, tokens });
+      } else {
+        outputResult({ profile: p, users });
+      }
+    });
 }

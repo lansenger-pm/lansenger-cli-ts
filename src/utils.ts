@@ -4,20 +4,94 @@ import Table from "cli-table3";
 
 export let jsonOutput = false;
 export let activeProfile = "default";
+export let activeStaffId = "";
 
 export function setJsonOutput(val: boolean) { jsonOutput = val; }
 export function setActiveProfile(val: string) { activeProfile = val; }
+export function setActiveStaffId(val: string) { activeStaffId = val; }
 
 export function getStore(): CredentialStore {
   return new CredentialStore(undefined, activeProfile);
 }
 
+function wrapWithAutoUserToken(client: LansengerClient, store: CredentialStore, staffId: string): LansengerClient {
+  const resolveUserToken = async (): Promise<string> => {
+    const cached = store.loadUserToken(staffId);
+    const userToken = cached.user_token || "";
+    const refreshToken = cached.refresh_token || "";
+    const expiry = cached.user_token_expiry || 0;
+
+    if (userToken && expiry > Math.floor(Date.now() / 1000)) {
+      return userToken;
+    }
+
+    if (!refreshToken) {
+      throw new Error(
+        `No userToken available for staff_id=${staffId} and no refreshToken for auto-refresh. ` +
+        "Run OAuth2 authorize flow: build_authorize_url → exchange_code."
+      );
+    }
+
+    const result = await client.refreshUserToken(refreshToken);
+    if (!result.success || !result.user_token) {
+      throw new Error(`Failed to refresh user token for staff_id=${staffId}: ${result.error || "Unknown error"}`);
+    }
+
+    store.saveUserToken(
+      result.user_token,
+      result.refresh_token || "",
+      result.expires_in,
+      300,
+      result.refresh_expires_in || 0,
+      staffId
+    );
+
+    return result.user_token;
+  };
+
+  return new Proxy(client, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+
+      if (typeof value !== "function") {
+        return value;
+      }
+
+      return function (this: any, ...args: any[]) {
+        const lastIdx = args.length - 1;
+        if (
+          lastIdx >= 0 &&
+          typeof args[lastIdx] === "object" &&
+          args[lastIdx] !== null &&
+          "user_token" in args[lastIdx]
+        ) {
+          const opts = args[lastIdx] as Record<string, any>;
+          if (!opts.user_token) {
+            return (async () => {
+              const token = await resolveUserToken();
+              args[lastIdx] = { ...opts, user_token: token };
+              return value.apply(this, args);
+            })();
+          }
+        }
+        return value.apply(this, args);
+      };
+    },
+  }) as LansengerClient;
+}
+
 export function getClient(): LansengerClient {
   const store = getStore();
+  let client: LansengerClient;
   if (store.hasFullConfig()) {
-    return LansengerClient.fromStore(activeProfile);
+    client = LansengerClient.fromStore(activeProfile);
+  } else {
+    client = LansengerClient.fromEnv();
   }
-  return LansengerClient.fromEnv();
+  if (activeStaffId) {
+    return wrapWithAutoUserToken(client, store, activeStaffId);
+  }
+  return client;
 }
 
 export function outputResult(data: any, fields?: string[], title?: string) {
