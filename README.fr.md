@@ -382,6 +382,72 @@ lansenger config show --profile my-app
 - `config show` masque les secrets (`***`)
 - Variables d'environnement supportées pour CI/CD
 
+## Identité et Permissions
+
+### Matrice des Capacités par Identité
+
+La plateforme Lansenger propose trois types d'identité avec différents accès API :
+
+| Command Domain | Personal Bot | Org App (Self-built) | Org App + Bot | Notes |
+|--------|:---:|:---:|:---:|------|
+| `message send-text/markdown/file/...` (bot DM) | **Y** | N | **Y** | Seuls les bots peuvent envoyer des DMs bot |
+| `message send-text --group` (group chat) | N* | N | **Y** | L'API bot personnel le supporte mais pas encore de fonction rejoindre-groupe |
+| `message send-group-message` | N* | N | **Y** | Identique à ci-dessus |
+| `message send-account-message` (public account) | N | **Y** | **Y** | Nécessite la capacité compte public |
+| `message send-user-message` (user-to-user) | N | **Y** | **Y** | Nécessite userToken + OAuth2 |
+| `message revoke` | **Y** | **Y** | **Y** | Révoquer ses propres messages |
+| `staff *` (contacts read-only) | N | **Y** | **Y** | `search` nécessite en plus userToken |
+| `department *` | N | **Y** | **Y** | Applications niveau org uniquement |
+| `calendar *` | N | **Y** | **Y** | Avec userToken = identité utilisateur ; sans = identité bot |
+| `todo *` | N | **Y** | **Y** | Applications niveau org uniquement |
+| `chat list/messages` | N | **Y** | **Y** | Applications niveau org uniquement |
+| `group *` (group management V2) | N | N | **Y** | Nécessite que le bot soit dans le groupe |
+| `media upload` | **Y** | **Y** | **Y** | Téléversement général |
+| `media upload-app` | N | **Y** | **Y** | Applis auto-hébergées seulement (pas ISV) |
+| `media download/path` | **Y** | **Y** | **Y** | Téléchargement général |
+| `oauth *` | N | **Y** | **Y** | Applications niveau org uniquement |
+| `streaming *` | N | **Y** | **Y** | Applications niveau org uniquement |
+| `callback *` (event parsing) | N/A | N/A | N/A | Opération pure de données, aucune identité requise |
+
+> \* **N\*** = Capacité API existante, mais fonction rejoindre-groupe pas encore disponible.
+
+> **Personal Bot** peut seulement envoyer/recevoir des messages et téléverser/télécharger des fichiers. Ne peut pas accéder aux contacts, groupes, calendriers ou OAuth2.
+>
+> **Org App vs Org App + Bot** : Même appID/appSecret. La seule différence est les canaux de messagerie — seuls les bots peuvent envoyer des DMs bot et des messages de groupe (car seuls les bots peuvent rejoindre les groupes). Toutes les autres API (contacts, calendrier, tâches, conversations, OAuth2, streaming) fonctionnent de manière identique pour les deux. Actuellement, seules les applications auto-hébergées supportent la capacité bot.
+
+### Permissions du Centre Développeur
+
+Au-delà du type d'identité, les appels API spécifiques dépendent aussi des interrupteurs de permission dans le Centre Développeur Lansenger. L'organisation peut restreindre l'accès développeur, nécessitant l'assistance d'un administrateur.
+
+**Permissions de Base (activées par défaut) :**
+
+| Permission | Description |
+|------|------|
+| Obtenir les infos utilisateur de base | Obtenir les infos de base du personnel pour la connexion système/appli |
+| Envoyer des messages de notification | Obtenir les canaux de messagerie de l'org pour envoyer des messages aux personnes/groupes |
+
+**Permissions Avancées (désactivées par défaut, doivent être activées manuellement) :**
+
+| Permission | Description | Commande Impactée |
+|------|------|-------------|
+| Contacts lecture seule | Accès en lecture aux contacts | `staff`, `department` |
+| Contacts édition | Accès en édition aux contacts | `staff` (créer/mettre à jour/supprimer) |
+| Infos sensibles - Téléphone | Accès aux numéros de téléphone | `staff` (detail, id-mapping) |
+| Infos sensibles - Email | Accès aux emails | `staff` (detail, id-mapping) |
+| Infos sensibles - N° d'identité | Accès aux numéros d'identité | `staff` |
+| Infos sensibles - ID employé | Accès aux IDs employé | `staff` |
+| Mapper attribut unique vers staff ID | Mapper tél/email/ID employé vers staff ID | `staff` (id-mapping) |
+| Édition d'application | Créer et mettre à jour des applications | Gestion Centre Développeur |
+| Groupes lecture seule | Accès en lecture aux groupes | `group` (infos/membres) |
+| Groupes édition | Accès en édition aux groupes | `group` (créer/màj/dissoudre/membres) |
+| Calendrier lecture seule | Accès en lecture au calendrier et événements | `calendar` (requête) |
+| Calendrier édition | Accès en édition au calendrier et événements | `calendar` (créer/màj/supprimer) |
+| Téléverser média | Permission de téléversement de fichiers média | `media` (upload, upload-app) |
+| Lecture modèles Workbench | Accès en lecture aux modèles workbench | — |
+| Écriture modèles Workbench | Accès en écriture aux modèles workbench | — |
+
+En cas d'erreur de permission, vérifiez d'abord que le type d'identité supporte l'opération, puis invitez l'utilisateur à activer la permission avancée correspondante dans le Centre Développeur (contacter l'admin de l'org si l'accès est impossible).
+
 ## Compatibilité CLI
 
 ```bash

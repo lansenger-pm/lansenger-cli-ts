@@ -386,6 +386,72 @@ lansenger config show --profile my-app
 - `config show` 對所有密鑰類欄位脫敏顯示（`***`），僅 `api_gateway_url` 和 `passport_url` 明文展示
 - 支援環境變數 `LANSENGER_APP_ID` / `LANSENGER_APP_SECRET` / `LANSENGER_ENCODING_KEY` / `LANSENGER_CALLBACK_TOKEN`，適合 CI/CD 場景
 
+## 身份與權限
+
+### 身份能力矩陣
+
+藍信平台有三種身份類型，對應不同的 API 存取權限：
+
+| Command Domain | Personal Bot | Org App (Self-built) | Org App + Bot | 說明 |
+|--------|:---:|:---:|:---:|------|
+| `message send-text/markdown/file/...` (bot DM) | **Y** | N | **Y** | 僅 bot 可傳送 bot 私聊 |
+| `message send-text --group` (group chat) | N* | N | **Y** | 個人機器人 API 支援，但暫無加群功能 |
+| `message send-group-message` | N* | N | **Y** | 同上 |
+| `message send-account-message` (public account) | N | **Y** | **Y** | 需要公眾號能力 |
+| `message send-user-message` (user-to-user) | N | **Y** | **Y** | 需要 userToken + OAuth2 |
+| `message revoke` | **Y** | **Y** | **Y** | 撤回自己的訊息 |
+| `staff *` (contacts read-only) | N | **Y** | **Y** | `search` 額外需要 userToken |
+| `department *` | N | **Y** | **Y** | 僅組織級應用 |
+| `calendar *` | N | **Y** | **Y** | 有 userToken = 使用者身份；無 = bot 身份 |
+| `todo *` | N | **Y** | **Y** | 僅組織級應用 |
+| `chat list/messages` | N | **Y** | **Y** | 僅組織級應用 |
+| `group *` (group management V2) | N | N | **Y** | 需要 bot 在群組內 |
+| `media upload` | **Y** | **Y** | **Y** | 通用上傳 |
+| `media upload-app` | N | **Y** | **Y** | 僅自建應用（非 ISV） |
+| `media download/path` | **Y** | **Y** | **Y** | 通用下載 |
+| `oauth *` | N | **Y** | **Y** | 僅組織級應用 |
+| `streaming *` | N | **Y** | **Y** | 僅組織級應用 |
+| `callback *` (event parsing) | N/A | N/A | N/A | 純資料操作，無身份要求 |
+
+> \* **N\*** = API 能力存在，但加群功能暫未上線。
+
+> **Personal Bot** 只能收發訊息和上傳下載檔案，無法存取通訊錄、群組、行事曆或 OAuth2。
+>
+> **Org App vs Org App + Bot**：使用相同的 appID/appSecret，唯一區別是訊息通道——只有 bot 才能傳送 bot 私聊和群組訊息（因為只有 bot 能加入群組）。所有其他 API（通訊錄、行事曆、待辦、會話、OAuth2、串流訊息）兩者功能完全一致。目前僅自建應用支援 bot 能力。
+
+### 開發者中心權限
+
+除了身份類型，特定 API 呼叫還取決於藍信開發者中心的權限開關。組織可能限制開發者存取，需要管理員協助。
+
+**基礎權限（預設開啟）：**
+
+| 權限 | 說明 |
+|------|------|
+| 取得使用者基本資訊 | 取得人員基本資訊，用於系統/應用登入 |
+| 傳送通知訊息 | 取得組織訊息通道，向人員/群組傳送訊息 |
+
+**進階權限（預設關閉，需手動開啟）：**
+
+| 權限 | 說明 | 影響的命令 |
+|------|------|-------------|
+| 通訊錄唯讀 | 通訊錄讀取權限 | `staff`、`department` |
+| 通訊錄編輯 | 通訊錄編輯權限 | `staff`（建立/更新/刪除） |
+| 敏感資訊 - 手機號 | 存取使用者手機號 | `staff`（detail、id-mapping） |
+| 敏感資訊 - 電子郵件 | 存取使用者電子郵件 | `staff`（detail、id-mapping） |
+| 敏感資訊 - 證件號 | 存取使用者證件號 | `staff` |
+| 敏感資訊 - 工號 | 存取使用者工號 | `staff` |
+| 唯一屬性對應 staffId | 將手機號/電子郵件/工號對應為 staffId | `staff`（id-mapping） |
+| 應用編輯 | 建立和更新應用 | 開發者中心管理 |
+| 群組唯讀 | 群組讀取權限 | `group`（查詢資訊/成員） |
+| 群組編輯 | 群組編輯權限 | `group`（建立/更新/解散/成員） |
+| 行事曆唯讀 | 行事曆與排程讀取權限 | `calendar`（查詢） |
+| 行事曆編輯 | 行事曆與排程編輯權限 | `calendar`（建立/更新/刪除） |
+| 上傳媒體 | 上傳媒體檔案權限 | `media`（upload、upload-app） |
+| 工作台範本讀取 | 工作台範本讀取權限 | — |
+| 工作台範本寫入 | 工作台範本寫入權限 | — |
+
+遇到權限錯誤時，請首先確認身份類型是否支援該操作，然後提示使用者在開發者中心開啟相應的進階權限（如無法存取請聯絡組織管理員）。
+
 ## CLI 相容性
 
 本 TS 版 CLI 與 Python 版、Go 版命令語法完全一致：
