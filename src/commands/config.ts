@@ -115,8 +115,8 @@ export function registerConfigCommands(program: Command) {
           tokens[staffId] = {
             user_token: tokenData.user_token || "",
             refresh_token: tokenData.refresh_token || "",
-            expires_in: tokenData.expires_in || 0,
-            refresh_expires_in: tokenData.refresh_expires_in || 0,
+            expires_in: tokenData.user_token_expiry || 0,
+            refresh_expires_in: tokenData.refresh_token_expiry || 0,
           };
         }
         outputResult({ profile: p, users, tokens });
