@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.10] - 2026-06-17
+
+### Fixed
+
+- **config**: `list-users --show-tokens` showed 0 for both expiry times due to wrong key names (`expires_in` → `user_token_expiry`, `refresh_expires_in` → `refresh_token_expiry`).
+
 ## [1.3.9] - 2026-06-16
 
 ### Added
