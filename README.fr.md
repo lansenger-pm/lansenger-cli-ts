@@ -400,8 +400,8 @@ La plateforme Lansenger propose trois types d'identité avec différents accès 
 | Command Domain | Personal Bot | Org App (Self-built) | Org App + Bot | Notes |
 |--------|:---:|:---:|:---:|------|
 | `message send-text/markdown/file/...` (bot DM) | **Y** | N | **Y** | Seuls les bots peuvent envoyer des DMs bot |
-| `message send-text --group` (group chat) | N* | N | **Y** | L'API bot personnel le supporte mais pas encore de fonction rejoindre-groupe |
-| `message send-group-message` | N* | N | **Y** | Identique à ci-dessus |
+| `message send-text --group` (group chat) | **Y** | N | **Y** | L'API bot personnel le supporte |
+| `message send-group-message` | **Y** | N | **Y** | Identique à ci-dessus |
 | `message send-account-message` (public account) | N | **Y** | **Y** | Nécessite la capacité compte public |
 | `message send-user-message` (user-to-user) | N | **Y** | **Y** | Nécessite userToken + OAuth2 |
 | `message revoke` | **Y** | **Y** | **Y** | Révoquer ses propres messages |
@@ -418,9 +418,8 @@ La plateforme Lansenger propose trois types d'identité avec différents accès 
 | `streaming *` | N | **Y** | **Y** | Applications niveau org uniquement |
 | `callback *` (event parsing) | N/A | N/A | N/A | Opération pure de données, aucune identité requise |
 
-> \* **N\*** = Capacité API existante, mais fonction rejoindre-groupe pas encore disponible.
 
-> **Personal Bot** peut seulement envoyer/recevoir des messages et téléverser/télécharger des fichiers. Ne peut pas accéder aux contacts, groupes, calendriers ou OAuth2.
+> **Personal Bot** peut seulement envoyer/recevoir des messages et téléverser/télécharger des fichiers. Ne peut pas accéder aux contacts, calendriers ou OAuth2.
 >
 > **Org App vs Org App + Bot** : Même appID/appSecret. La seule différence est les canaux de messagerie — seuls les bots peuvent envoyer des DMs bot et des messages de groupe (car seuls les bots peuvent rejoindre les groupes). Toutes les autres API (contacts, calendrier, tâches, conversations, OAuth2, streaming) fonctionnent de manière identique pour les deux. Actuellement, seules les applications auto-hébergées supportent la capacité bot.
 

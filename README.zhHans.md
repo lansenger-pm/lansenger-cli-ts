@@ -404,8 +404,8 @@ lansenger config show --profile my-app
 | Command Domain | Personal Bot | Org App (Self-built) | Org App + Bot | 说明 |
 |--------|:---:|:---:|:---:|------|
 | `message send-text/markdown/file/...` (bot DM) | **Y** | N | **Y** | 仅 bot 可发送 bot 私聊 |
-| `message send-text --group` (group chat) | N* | N | **Y** | 个人机器人 API 支持，但暂无加群功能 |
-| `message send-group-message` | N* | N | **Y** | 同上 |
+| `message send-text --group` (group chat) | **Y** | N | **Y** | 个人机器人 API 支持 |
+| `message send-group-message` | **Y** | N | **Y** | 同上 |
 | `message send-account-message` (public account) | N | **Y** | **Y** | 需要公众号能力 |
 | `message send-user-message` (user-to-user) | N | **Y** | **Y** | 需要 userToken + OAuth2 |
 | `message revoke` | **Y** | **Y** | **Y** | 撤回自己的消息 |
@@ -422,9 +422,8 @@ lansenger config show --profile my-app
 | `streaming *` | N | **Y** | **Y** | 仅组织级应用 |
 | `callback *` (event parsing) | N/A | N/A | N/A | 纯数据操作，无身份要求 |
 
-> \* **N\*** = API 能力存在，但加群功能暂未上线。
 
-> **Personal Bot** 只能收发消息和上传下载文件，无法访问通讯录、群组、日历或 OAuth2。
+> **Personal Bot** 只能收发消息和上传下载文件，无法访问通讯录、日历或 OAuth2。
 >
 > **Org App vs Org App + Bot**：使用相同的 appID/appSecret，唯一区别是消息通道——只有 bot 才能发送 bot 私聊和群消息（因为只有 bot 能加入群组）。所有其他 API（通讯录、日历、待办、会话、OAuth2、流式消息）两者功能完全一致。目前仅自建应用支持 bot 能力。
 
