@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.11] - 2026-06-17
+
+### Added
+
+- **message**: `send-text`, `send-markdown`, `send-group-message` commands now support `--mention-bot` and `--ref-msg-id` options.
+
+### Fixed
+
+- **message**: `query-groups` command default page offset changed from 1 to 0 to match V2 API specification.
+
 ## [1.3.10] - 2026-06-17
 
 ### Fixed

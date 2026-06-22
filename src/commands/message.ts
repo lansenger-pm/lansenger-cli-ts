@@ -15,6 +15,8 @@ export function registerMessageCommands(program: Command) {
     .option("-g, --group", "Send as group message", false)
     .option("--mention-all", "@all in group", false)
     .option("-m, --mention <ids...>", "User IDs to @mention (space-separated)")
+    .option("--mention-bot <ids...>", "Bot IDs to @mention (space-separated)")
+    .option("--ref-msg-id <id>", "Reference message openId for reply", "")
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
     .action(async (chatId, content, opts) => {
@@ -26,6 +28,8 @@ export function registerMessageCommands(program: Command) {
         is_group: opts.group,
         reminder_all: opts.mentionAll,
         reminder_user_ids: opts.mention || undefined,
+        reminder_bot_ids: opts.mentionBot || undefined,
+        ref_msg_id: opts.refMsgId || undefined,
         user_token: opts.userToken || undefined,
         sender_id: opts.senderId || undefined,
       });
@@ -40,6 +44,8 @@ export function registerMessageCommands(program: Command) {
     .argument("<content>", "Markdown content")
     .option("--mention-all", "@all in group", false)
     .option("-m, --mention <ids...>", "User IDs to @mention (space-separated)")
+    .option("--mention-bot <ids...>", "Bot IDs to @mention (space-separated)")
+    .option("--ref-msg-id <id>", "Reference message openId for reply", "")
     .option("-g, --group", "Send as group message", false)
     .option("--user-token <token>", "User token for private channel", "")
     .option("--sender-id <senderId>", "Sender staff ID for group message", "")
@@ -48,6 +54,8 @@ export function registerMessageCommands(program: Command) {
       const result = await client.sendMarkdown(chatId, content, {
         reminder_all: opts.mentionAll,
         reminder_user_ids: opts.mention || undefined,
+        reminder_bot_ids: opts.mentionBot || undefined,
+        ref_msg_id: opts.refMsgId || undefined,
         is_group: opts.group,
         user_token: opts.userToken || undefined,
         sender_id: opts.senderId || undefined,
@@ -284,6 +292,8 @@ export function registerMessageCommands(program: Command) {
     .option("--sender-id <senderId>", "Sender staff ID", "")
     .option("--mention-all", "@all (text/formatText only)", false)
     .option("-m, --mention <ids...>", "User IDs to @mention (space-separated, text/formatText only)")
+    .option("--mention-bot <ids...>", "Bot IDs to @mention (space-separated, text/formatText only)")
+    .option("--ref-msg-id <id>", "Reference message openId for reply", "")
     .option("--outlines <outlines>", "Group notification digest", "")
     .option("--entry-id <entryId>", "App entry selector", "")
     .action(async (groupId, msgType, msgData, opts) => {
@@ -294,6 +304,8 @@ export function registerMessageCommands(program: Command) {
         sender_id: opts.senderId || undefined,
         reminder_all: opts.mentionAll,
         reminder_user_ids: opts.mention || undefined,
+        reminder_bot_ids: opts.mentionBot || undefined,
+        ref_msg_id: opts.refMsgId || undefined,
         outlines: opts.outlines || undefined,
         entry_id: opts.entryId || undefined,
       });
@@ -304,7 +316,7 @@ export function registerMessageCommands(program: Command) {
   cmd
     .command("query-groups")
     .description("Query group IDs with pagination")
-    .option("-p, --page <page>", "Page offset", "1")
+    .option("-p, --page <page>", "Page offset (starts from 0)", "0")
     .option("-s, --size <size>", "Page size", "100")
     .action(async (opts) => {
       const client = getClient();
