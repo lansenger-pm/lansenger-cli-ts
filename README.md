@@ -126,8 +126,17 @@ lansenger message send-text group123 "Announcement" --group --mention-all
 # @mention specific people in group
 lansenger message send-text group123 "Please check" --group --mention staff001
 
+# @mention specific bots in group
+lansenger message send-text group123 "Bot check" --group --mention-bot bot001 --mention-bot bot002
+
+# Reply to a message (message reference)
+lansenger message send-text group123 "Got it" --group --ref-msg-id 524288-xxx
+
 # Bot channel broadcast
 lansenger message send-bot-message text '{"content":"Notice"}' --chat-id user001 --chat-id user002
+
+# Bot channel reply (message reference)
+lansenger message send-bot-message text '{"content":"Reply"}' --chat-id user001 --ref-msg-id 524288-xxx
 
 # Group message channel (user_token optional, shows as bot without it)
 lansenger message send-group-message group123 text '{"content":"Group message"}'
@@ -148,7 +157,7 @@ lansenger message revoke msg001 msg002
 lansenger message send-reminder msg001 --type 1 --type 2 --user staff001 --user staff002
 
 # Query group ID list
-lansenger message query-groups --page 1 --size 100
+lansenger message query-groups --page 0 --size 100
 ```
 
 ### Group Management
