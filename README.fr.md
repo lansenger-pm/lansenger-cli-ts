@@ -124,8 +124,17 @@ lansenger message send-text group123 "Annonce" --group --mention-all
 # @mention spécifique
 lansenger message send-text group123 "Veuillez vérifier" --group --mention staff001
 
+# @mention de bots spécifiques dans le groupe
+lansenger message send-text group123 "Bot check" --group --mention-bot bot001 --mention-bot bot002
+
+# Répondre à un message (référence de message)
+lansenger message send-text group123 "Got it" --group --ref-msg-id 524288-xxx
+
 # Diffusion via le canal robot
 lansenger message send-bot-message text '{"content":"Avis"}' --chat-id user001 --chat-id user002
+
+# Réponse du canal bot (référence de message)
+lansenger message send-bot-message text '{"content":"Reply"}' --chat-id user001 --ref-msg-id 524288-xxx
 
 # Canal message de groupe (user_token facultatif)
 lansenger message send-group-message group123 text '{"content":"Message"}'
@@ -146,7 +155,7 @@ lansenger message revoke msg001 msg002
 lansenger message send-reminder msg001 --type 1 --type 2 --user staff001 --user staff002
 
 # Lister les IDs de groupe
-lansenger message query-groups --page 1 --size 100
+lansenger message query-groups --page 0 --size 100
 ```
 
 ### Gestion des groupes

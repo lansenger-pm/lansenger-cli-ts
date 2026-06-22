@@ -126,8 +126,17 @@ lansenger message send-text group123 "全員通知" --group --mention-all
 # 群組內 @指定人
 lansenger message send-text group123 "請檢視" --group --mention staff001
 
+# @提及群組中的特定機器人
+lansenger message send-text group123 "Bot check" --group --mention-bot bot001 --mention-bot bot002
+
+# 回覆訊息（訊息引用）
+lansenger message send-text group123 "Got it" --group --ref-msg-id 524288-xxx
+
 # 機械人通道發送訊息
 lansenger message send-bot-message text '{"content":"通知內容"}' --chat-id user001 --chat-id user002
+
+# 機械人通道回覆（訊息引用）
+lansenger message send-bot-message text '{"content":"Reply"}' --chat-id user001 --ref-msg-id 524288-xxx
 
 # 群組訊息通道發送（user_token 可選，無則顯示為 bot）
 lansenger message send-group-message group123 text '{"content":"群組訊息"}'
@@ -148,7 +157,7 @@ lansenger message revoke msg001 msg002
 lansenger message send-reminder msg001 --type 1 --type 2 --user staff001 --user staff002
 
 # 查詢群 ID 列表
-lansenger message query-groups --page 1 --size 100
+lansenger message query-groups --page 0 --size 100
 ```
 
 ### 群組管理
