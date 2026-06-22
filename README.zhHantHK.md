@@ -404,7 +404,7 @@ lansenger config show --profile my-app
 | Command Domain | Personal Bot | Org App (Self-built) | Org App + Bot | 說明 |
 |--------|:---:|:---:|:---:|------|
 | `message send-text/markdown/file/...` (bot DM) | **Y** | N | **Y** | 僅 bot 可傳送 bot 私聊 |
-| `message send-text --group` (group chat) | **Y** | N | **Y** | 個人機械人 API 支援 |
+| `message send-text --group` (group chat) | **Y** | N | **Y** | 個人機械人現已支援群聊 |
 | `message send-group-message` | **Y** | N | **Y** | 同上 |
 | `message send-account-message` (public account) | N | **Y** | **Y** | 需要公眾號能力 |
 | `message send-user-message` (user-to-user) | N | **Y** | **Y** | 需要 userToken + OAuth2 |
