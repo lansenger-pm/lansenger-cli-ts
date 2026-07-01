@@ -369,6 +369,74 @@ export function registerMessageCommands(program: Command) {
     });
 
   cmd
+    .command("approve-card")
+    .description("Send an approveCard (审批卡片) message")
+    .argument("<bodyTitle>", "Card body title (required)")
+    .argument("<bodyContent>", "Card body markdown content (required)")
+    .option("-C, --chat-id <chatId>", "Chat ID (user/group)", "")
+    .option("--head-title <title>", "Card header title", "")
+    .option("--head-icon-link <url>", "Header icon URL", "")
+    .option("--head-status <desc>", "Card status description", "")
+    .option("--head-status-colour <colour>", "Status colour (e.g. green)", "")
+    .option("--fields <json>", "Body fields as JSON array, e.g. '[{\"key\":\"k\",\"value\":\"v\"}]'")
+    .option("--card-link <url>", "Overall card click link", "")
+    .option("--card-link-pc <url>", "PC click link", "")
+    .option("--card-link-pad <url>", "Pad click link", "")
+    .option("--buttons <json>", "Buttons as JSON array, e.g. '[{\"text\":\"Approve\",\"buttonTheme\":1,\"callbackInfo\":\"ok\"}]'")
+    .option("--expire-time <seconds>", "Card expiry in seconds (max 30 days, 0=default 7d)", "0")
+    .option("--mention-all", "@all in group", false)
+    .option("-m, --mention <ids...>", "User IDs to @mention (space-separated)")
+    .option("--mention-bot <ids...>", "Bot IDs to @mention (space-separated)")
+    .option("-g, --group", "Send as group message", false)
+    .option("--user-token <token>", "User token for private channel", "")
+    .option("--sender-id <senderId>", "Sender staff ID for group message", "")
+    .action(async (bodyTitle, bodyContent, opts) => {
+      const client = getClient();
+      const parsedFields = opts.fields ? parseJsonOption(opts.fields) : undefined;
+      const parsedButtons = opts.buttons ? parseJsonOption(opts.buttons) : undefined;
+      const result = await client.sendApproveCard(bodyTitle, bodyContent, {
+        chat_id: opts.chatId || undefined,
+        head_title: opts.headTitle || undefined,
+        head_icon_link: opts.headIconLink || undefined,
+        head_status_describe: opts.headStatus || undefined,
+        head_status_colour: opts.headStatusColour || undefined,
+        fields: parsedFields,
+        card_link: opts.cardLink || undefined,
+        card_link_for_pc: opts.cardLinkPc || undefined,
+        card_link_for_pad: opts.cardLinkPad || undefined,
+        buttons: parsedButtons,
+        expire_time: parseInt(opts.expireTime),
+        reminder_all: opts.mentionAll,
+        reminder_user_ids: opts.mention || undefined,
+        reminder_bot_ids: opts.mentionBot || undefined,
+        is_group: opts.group,
+        user_token: opts.userToken || undefined,
+        sender_id: opts.senderId || undefined,
+      });
+      checkError(result);
+      outputResult(result, ["message_id","msg_type","operation"], "Send ApproveCard Result");
+    });
+
+  cmd
+    .command("update-approve-card")
+    .description("Update an approveCard's status in-place")
+    .argument("<msgId>", "Message ID to update")
+    .option("--head-status <desc>", "Updated status description", "")
+    .option("--head-status-colour <colour>", "Updated status colour", "")
+    .option("--buttons <json>", "Updated buttons as JSON array")
+    .action(async (msgId, opts) => {
+      const client = getClient();
+      const parsedButtons = opts.buttons ? parseJsonOption(opts.buttons) : undefined;
+      const result = await client.updateApproveCard(msgId, {
+        head_status_describe: opts.headStatus || undefined,
+        head_status_colour: opts.headStatusColour || undefined,
+        buttons: parsedButtons,
+      });
+      checkError(result);
+      outputResult(result, ["operation"], "Update ApproveCard Result");
+    });
+
+  cmd
     .command("send-account-message")
     .description("Send a public account message")
     .argument("<msgType>", "Message type")

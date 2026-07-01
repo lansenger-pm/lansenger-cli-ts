@@ -5,10 +5,14 @@ import Table from "cli-table3";
 export let jsonOutput = false;
 export let activeProfile = "default";
 export let activeStaffId = "";
+export let activeAppToken = "";
+export let activeUserToken = "";
 
 export function setJsonOutput(val: boolean) { jsonOutput = val; }
 export function setActiveProfile(val: string) { activeProfile = val; }
 export function setActiveStaffId(val: string) { activeStaffId = val; }
+export function setAppToken(val: string) { activeAppToken = val; }
+export function setUserToken(val: string) { activeUserToken = val; }
 
 export function getStore(): CredentialStore {
   return new CredentialStore(undefined, activeProfile);
@@ -81,12 +85,40 @@ function wrapWithAutoUserToken(client: LansengerClient, store: CredentialStore, 
 }
 
 export function getClient(): LansengerClient {
+  // External mode: when --app-token is provided, skip credential file entirely.
+  // The caller manages token lifecycle; no auto-refresh.
+  if (activeAppToken) {
+    const config = LansengerConfig.create(
+      "", "",  // app_id, app_secret — not needed in external mode
+      undefined, undefined, undefined, undefined, undefined, undefined,
+      activeAppToken,
+      activeUserToken,
+    );
+    return LansengerClient.fromConfig(config);
+  }
+
   const store = getStore();
   let client: LansengerClient;
   if (store.hasFullConfig()) {
     client = LansengerClient.fromStore(activeProfile);
   } else {
     client = LansengerClient.fromEnv();
+  }
+  // Inject app_token if provided via CLI flag or env var
+  if (activeAppToken) {
+    // Access private _config to set app_token — the cleanest way without
+    // duplicating the full client construction logic.
+    (client as any)._config = LansengerConfig.create(
+      (client as any)._config.app_id,
+      (client as any)._config.app_secret,
+      (client as any)._config.api_gateway_url,
+      (client as any)._config.passport_url,
+      (client as any)._config.http_timeout,
+      (client as any)._config.encoding_key,
+      (client as any)._config.callback_token,
+      (client as any)._config.redirect_uri,
+      activeAppToken,
+    );
   }
   if (activeStaffId) {
     return wrapWithAutoUserToken(client, store, activeStaffId);
