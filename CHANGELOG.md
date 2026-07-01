@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.12] - 2026-07-01
+
+### Added
+
+- **bot-command**: New command group (create/query/delete) for managing bot slash commands (4.37).
+- **personal-app**: New command group (create/update/info/delete/list) for managing personal apps/bots (4.38).
+- **calendar**: `update-attendees` command for batch add/delete schedule attendees (4.23.19).
+
 ## [1.3.11] - 2026-06-17
 
 ### Added

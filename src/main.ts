@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { setJsonOutput, setActiveProfile, setActiveStaffId, jsonOutput } from "./utils";
+import { setJsonOutput, setActiveProfile, setActiveStaffId, setAppToken, setUserToken, jsonOutput } from "./utils";
 import * as pkg from "../package.json";
 import { registerConfigCommands } from "./commands/config";
 import { registerMessageCommands } from "./commands/message";
@@ -15,6 +15,8 @@ import { registerMediaCommands } from "./commands/media";
 import { registerStreamingCommands } from "./commands/streaming";
 import { registerChatCommands } from "./commands/chat";
 import { registerHealthCommands } from "./commands/health";
+import { registerBotCommandCommands } from "./commands/bot-command";
+import { registerPersonalAppCommands } from "./commands/personal-app";
 
 const program = new Command();
 
@@ -24,12 +26,16 @@ program
   .option("-j, --json", "Output as JSON", false)
   .option("-P, --profile <profile>", "Credential profile", "default")
   .option("--as <staffId>", "Act as a staff member (auto-load user token)", "")
+  .option("--app-token <token>", "App access token (external mode — no auto-refresh)", "")
+  .option("--user-token <token>", "User access token (external mode — no auto-refresh)", "")
   .option("-v, --version", "Show CLI and SDK versions", false)
   .hook("preAction", () => {
     const opts = program.opts();
     if (opts.json) setJsonOutput(true);
     if (opts.profile) setActiveProfile(opts.profile);
     if (opts.as) setActiveStaffId(opts.as);
+    if (opts.appToken) setAppToken(opts.appToken);
+    if (opts.userToken) setUserToken(opts.userToken);
     if (opts.version) {
       const sdkPkg = require("lansenger-sdk-ts/package.json");
       if (jsonOutput) {
@@ -54,5 +60,7 @@ registerMediaCommands(program);
 registerStreamingCommands(program);
 registerChatCommands(program);
 registerHealthCommands(program);
+registerBotCommandCommands(program);
+registerPersonalAppCommands(program);
 
 program.parse();

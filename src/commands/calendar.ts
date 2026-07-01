@@ -255,4 +255,33 @@ export function registerCalendarCommands(program: Command) {
       checkError(result);
       outputResult(result, undefined, "Update Attendee Meta Result");
     });
+
+  cmd
+    .command("update-attendees")
+    .description("Batch add/remove schedule attendees (4.23.19)")
+    .argument("<calendarId>", "Calendar ID")
+    .argument("<scheduleId>", "Schedule ID")
+    .option("-A, --add <json>", "Staff IDs to add as JSON list", "")
+    .option("-X, --remove <json>", "Staff IDs to remove as JSON list", "")
+    .option("--reminder <type>", "Reminder: yes or no", "")
+    .option("--op <type>", "Operation: modify_current, modify_current_after, modify_all", "")
+    .option("--current-time <ts>", "Required when op != modify_all", "")
+    .option("--user-token <token>", "User token", "")
+    .option("--user-id <userId>", "User ID", "")
+    .action(async (calendarId, scheduleId, opts) => {
+      const client = getClient();
+      const addList = opts.add ? parseJsonOption(opts.add) : undefined;
+      const delList = opts.remove ? parseJsonOption(opts.remove) : undefined;
+      const result = await client.updateScheduleAttendees(calendarId, scheduleId, {
+        add_attendees: addList,
+        delete_attendees: delList,
+        reminder_type: opts.reminder || undefined,
+        operation_type: opts.op || undefined,
+        current_time: opts.currentTime ? parseInt(opts.currentTime) : undefined,
+        user_token: opts.userToken || undefined,
+        user_id: opts.userId || undefined,
+      });
+      checkError(result);
+      outputResult(result, ["schedule_ids", "failed_attendees"], "Update Attendees Result");
+    });
 }
