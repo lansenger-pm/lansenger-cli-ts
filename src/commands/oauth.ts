@@ -1,7 +1,23 @@
 import { Command } from "commander";
 import * as http from "http";
+import * as cp from "child_process";
 import { LansengerClient } from "lansenger-sdk-ts";
 import { getClient, outputResult, checkError, getStore, jsonOutput } from "../utils";
+
+function copyToClipboard(text: string): boolean {
+  try {
+    if (process.platform === "darwin") {
+      cp.execSync("pbcopy", { input: text });
+    } else if (process.platform === "win32") {
+      cp.execSync("clip", { input: text });
+    } else {
+      cp.execSync("wl-copy", { input: text });
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 interface CallbackResult {
   code?: string;
@@ -25,6 +41,9 @@ export function registerOauthCommands(program: Command) {
         state: opts.state || undefined,
       });
       outputResult({ authorize_url: url });
+      if (!jsonOutput && copyToClipboard(url)) {
+        console.log("  (copied to clipboard)");
+      }
     });
 
   cmd
