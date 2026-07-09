@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.3.16] - 2026-06-10
-
-### Changed
-
-- 升级 SDK 依赖到 1.3.16（修复回调 AES-CBC 解密流程）
-
 ## [1.3.12] - 2026-07-01
 
 ### Added

@@ -17,10 +17,6 @@ import { registerChatCommands } from "./commands/chat";
 import { registerHealthCommands } from "./commands/health";
 import { registerBotCommandCommands } from "./commands/bot-command";
 import { registerPersonalAppCommands } from "./commands/personal-app";
-import { registerOvertimeCommands } from "./commands/overtime";
-import { registerLeaveCommands } from "./commands/leave";
-import { registerBoardroomCommands } from "./commands/boardroom";
-import { registerAttendanceCommands } from "./commands/attendance";
 
 const program = new Command();
 
@@ -66,9 +62,5 @@ registerChatCommands(program);
 registerHealthCommands(program);
 registerBotCommandCommands(program);
 registerPersonalAppCommands(program);
-registerOvertimeCommands(program);
-registerLeaveCommands(program);
-registerBoardroomCommands(program);
-registerAttendanceCommands(program);
 
 program.parse();
