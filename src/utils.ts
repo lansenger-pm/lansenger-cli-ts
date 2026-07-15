@@ -192,3 +192,13 @@ export function parseJsonOption(val: string): any {
 export function commaList(val: string): string[] {
   return val.split(",").map(s => s.trim()).filter(s => s.length > 0);
 }
+
+let _verbose = false;
+export function setVerbose(value: boolean) { _verbose = value; }
+export function isVerbose() { return _verbose; }
+
+export const logger = {
+  debug: (...args: any[]) => { if (_verbose) console.error(`[${new Date().toISOString().slice(11,19)}] [DEBUG]`, ...args); },
+  info: (...args: any[]) => { if (_verbose) console.error(`[${new Date().toISOString().slice(11,19)}] [INFO]`, ...args); },
+  error: (...args: any[]) => console.error(`[${new Date().toISOString().slice(11,19)}] [ERROR]`, ...args),
+};

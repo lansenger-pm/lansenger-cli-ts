@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { setJsonOutput, setActiveProfile, setActiveStaffId, setAppToken, setUserToken, jsonOutput } from "./utils";
+import { setJsonOutput, setActiveProfile, setActiveStaffId, setAppToken, setUserToken, setVerbose, jsonOutput } from "./utils";
+import { setSDKDebug } from "lansenger-sdk-ts";
 import * as pkg from "../package.json";
 import { registerConfigCommands } from "./commands/config";
 import { registerMessageCommands } from "./commands/message";
@@ -29,8 +30,10 @@ program
   .option("--app-token <token>", "App access token (external mode — no auto-refresh)", "")
   .option("--user-token <token>", "User access token (external mode — no auto-refresh)", "")
   .option("-v, --version", "Show CLI and SDK versions", false)
+  .option("--verbose", "Enable debug logging", false)
   .hook("preAction", () => {
     const opts = program.opts();
+    if (opts.verbose) { setVerbose(true); setSDKDebug(true); }
     if (opts.json) setJsonOutput(true);
     if (opts.profile) setActiveProfile(opts.profile);
     if (opts.as) setActiveStaffId(opts.as);
