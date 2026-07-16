@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.15] - 2026-07-16
+
+### Added
+
+- **cli**: `--as` mode now auto-injects `user_id` from staff_id. Wire `--verbose` flag to SDK `setSDKDebug()`.
+
+## [1.3.14] - 2026-07-16
+
+### Added
+
+- **cli**: `--verbose` flag to enable SDK debug logging.
+
+### Changed
+
+- **docs**: All READMEs: real URLs replaced, `passport_url` marked required across all languages.
+
 ## [1.3.12] - 2026-07-01
 
 ### Added
