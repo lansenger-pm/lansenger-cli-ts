@@ -18,7 +18,7 @@ export function getStore(): CredentialStore {
   return new CredentialStore(undefined, activeProfile);
 }
 
-function wrapWithAutoUserToken(client: LansengerClient, store: CredentialStore, staffId: string): LansengerClient {
+export function wrapWithAutoUserToken(client: LansengerClient, store: CredentialStore, staffId: string): LansengerClient {
   const resolveUserToken = async (): Promise<string> => {
     const cached = store.loadUserToken(staffId);
     const userToken = cached.user_token || "";
