@@ -66,14 +66,21 @@ function wrapWithAutoUserToken(client: LansengerClient, store: CredentialStore, 
         if (
           lastIdx >= 0 &&
           typeof args[lastIdx] === "object" &&
-          args[lastIdx] !== null &&
-          "user_token" in args[lastIdx]
+          args[lastIdx] !== null
         ) {
           const opts = args[lastIdx] as Record<string, any>;
-          if (!opts.user_token) {
+          const needsUserId = "user_id" in opts && !opts.user_id;
+          const needsUserToken = "user_token" in opts && !opts.user_token;
+
+          if (needsUserId || needsUserToken) {
             return (async () => {
-              const token = await resolveUserToken();
-              args[lastIdx] = { ...opts, user_token: token };
+              const newOpts: Record<string, any> = { ...opts };
+              if (needsUserId) newOpts.user_id = staffId;
+              if (needsUserToken) {
+                const token = await resolveUserToken();
+                newOpts.user_token = token;
+              }
+              args[lastIdx] = newOpts;
               return value.apply(this, args);
             })();
           }
