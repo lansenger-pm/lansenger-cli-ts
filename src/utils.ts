@@ -101,7 +101,12 @@ export function getClient(): LansengerClient {
       activeAppToken,
       activeUserToken,
     );
-    return LansengerClient.fromConfig(config);
+    const client = LansengerClient.fromConfig(config);
+    // Auto-inject global user_token into method calls where user_token is empty
+    if (activeUserToken) {
+      return wrapWithExternalUserToken(client, activeUserToken);
+    }
+    return client;
   }
 
   const store = getStore();
@@ -111,26 +116,39 @@ export function getClient(): LansengerClient {
   } else {
     client = LansengerClient.fromEnv();
   }
-  // Inject app_token if provided via CLI flag or env var
-  if (activeAppToken) {
-    // Access private _config to set app_token — the cleanest way without
-    // duplicating the full client construction logic.
-    (client as any)._config = LansengerConfig.create(
-      (client as any)._config.app_id,
-      (client as any)._config.app_secret,
-      (client as any)._config.api_gateway_url,
-      (client as any)._config.passport_url,
-      (client as any)._config.http_timeout,
-      (client as any)._config.encoding_key,
-      (client as any)._config.callback_token,
-      (client as any)._config.redirect_uri,
-      activeAppToken,
-    );
-  }
   if (activeStaffId) {
     return wrapWithAutoUserToken(client, store, activeStaffId);
   }
   return client;
+}
+
+export function wrapWithExternalUserToken(client: LansengerClient, userToken: string): LansengerClient {
+  return new Proxy(client, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+
+      if (typeof value !== "function") {
+        return value;
+      }
+
+      return function (this: any, ...args: any[]) {
+        const lastIdx = args.length - 1;
+        if (
+          lastIdx >= 0 &&
+          typeof args[lastIdx] === "object" &&
+          args[lastIdx] !== null
+        ) {
+          const opts = args[lastIdx] as Record<string, any>;
+          if ("user_token" in opts && !opts.user_token) {
+            const newOpts: Record<string, any> = { ...opts };
+            newOpts.user_token = userToken;
+            args[lastIdx] = newOpts;
+          }
+        }
+        return value.apply(this, args);
+      };
+    },
+  }) as LansengerClient;
 }
 
 export function outputResult(data: any, fields?: string[], title?: string) {

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.16] - 2026-07-17
+
+### Added
+
+- **cli**: `wrapWithExternalUserToken()` proxy function — auto-injects global `--user-token` into method calls where `user_token` is empty.
+- **cli**: External mode support in `getClient()` — when `--app-token` + `--user-token` are provided, wraps client with external token proxy.
+
 ## [1.3.15] - 2026-07-16
 
 ### Added
