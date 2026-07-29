@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.17] - 2026-07-29
+
+### Added
+
+- **cli**: `parseFieldOrJson()` utility — parses `--field`/`--link` values as JSON with automatic `name=value` fallback, fixing PowerShell quoting issues.
+
+### Fixed
+
+- **cli**: `send-app-card`, `update-dynamic-card` now accept `name=value` format for field/link parameters in addition to JSON.
+
 ## [1.3.16] - 2026-07-17
 
 ### Added

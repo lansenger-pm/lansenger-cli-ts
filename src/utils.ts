@@ -214,6 +214,18 @@ export function parseJsonOption(val: string): any {
   catch { console.error("Invalid JSON: " + val); process.exit(1); }
 }
 
+export function parseFieldOrJson(raw: string): any {
+  try { return JSON.parse(raw); }
+  catch {
+    if (raw.includes("=")) {
+      const idx = raw.indexOf("=");
+      return { name: raw.slice(0, idx), value: raw.slice(idx + 1) };
+    }
+    console.error(`Invalid field format: ${raw}. Use JSON or name=value`);
+    process.exit(1);
+  }
+}
+
 export function commaList(val: string): string[] {
   return val.split(",").map(s => s.trim()).filter(s => s.length > 0);
 }

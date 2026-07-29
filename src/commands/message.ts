@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, outputList, checkError, parseJsonOption } from "../utils";
+import { getClient, outputResult, outputList, checkError, parseJsonOption, parseFieldOrJson } from "../utils";
 
 export function registerMessageCommands(program: Command) {
   const cmd = program.command("message").description("Send and manage messages");
@@ -193,8 +193,8 @@ export function registerMessageCommands(program: Command) {
           colour: opts.statusColour || "",
         };
       }
-      const parsedFields = opts.field ? opts.field.map((f: string) => parseJsonOption(f)) : undefined;
-      const parsedLinks = opts.link ? opts.link.map((l: string) => parseJsonOption(l)) : undefined;
+      const parsedFields = opts.field ? opts.field.map((f: string) => parseFieldOrJson(f)) : undefined;
+      const parsedLinks = opts.link ? opts.link.map((l: string) => parseFieldOrJson(l)) : undefined;
       const result = await client.sendAppCard(chatId, bodyTitle, {
         head_title: opts.headTitle || undefined,
         body_sub_title: opts.subTitle || undefined,
@@ -234,7 +234,7 @@ export function registerMessageCommands(program: Command) {
           colour: opts.statusColour || "",
         };
       }
-      const parsedLinks = opts.link ? opts.link.map((l: string) => parseJsonOption(l)) : undefined;
+      const parsedLinks = opts.link ? opts.link.map((l: string) => parseFieldOrJson(l)) : undefined;
       const result = await client.updateDynamicCard(msgId, {
         is_last_update: opts.last,
         head_status_info: headStatusInfo,
