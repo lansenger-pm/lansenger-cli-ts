@@ -41,6 +41,27 @@ export function registerMediaCommands(program: Command) {
     });
 
   cmd
+    .command("upload-app-v2")
+    .description("Upload media for app/bot usage (4.5.5 V2 API, requires user token)")
+    .argument("<filePath>", "Local file path to upload")
+    .option("-t, --media-type <type>", "file, video, image, audio", "file")
+    .option("--user-token <token>", "User token (required)", "")
+    .option("--width <width>", "Width for video/image")
+    .option("--height <height>", "Height for video/image")
+    .option("--duration <duration>", "Duration in seconds for video/audio")
+    .action(async (filePath, opts) => {
+      const client = getClient();
+      const result = await client.uploadAppMediaFileV2(filePath, opts.userToken, {
+        media_type: opts.mediaType,
+        width: opts.width ? parseInt(opts.width) : undefined,
+        height: opts.height ? parseInt(opts.height) : undefined,
+        duration: opts.duration ? parseInt(opts.duration) : undefined,
+      });
+      checkError(result);
+      outputResult(result, ["message_id"], "Upload App Media Result (4.5.5 V2)");
+    });
+
+  cmd
     .command("download")
     .description("Download a media file (success status only; use download-to-file to save)")
     .argument("<mediaId>", "Media ID to download")
@@ -64,6 +85,28 @@ export function registerMediaCommands(program: Command) {
         media_type: opts.mediaType,
       });
       outputResult({ success: true, path: savedPath });
+    });
+
+  cmd
+    .command("download-share")
+    .description("Download media by share ID (4.5.6)")
+    .argument("<shareId>", "Share ID to download")
+    .option("-o, --output <path>", "Target file path", "")
+    .option("--user-token <token>", "User token", "")
+    .action(async (shareId, opts) => {
+      const client = getClient();
+      const result = await client.downloadMediaFileByShareId(shareId, {
+        user_token: opts.userToken || undefined,
+      });
+      checkError(result);
+      if (opts.output) {
+        const fs = await import("fs");
+        const data = result.data || Buffer.alloc(0);
+        fs.writeFileSync(opts.output, data);
+        outputResult({ success: true, path: opts.output, size: data.length });
+      } else {
+        outputResult({ success: result.success, size: result.data ? result.data.length : 0, error: result.error || "" });
+      }
     });
 
   cmd

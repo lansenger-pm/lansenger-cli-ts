@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-07-29
+
+### Added
+
+- **media**: `upload-app-v2` command — 4.5.5 V2 app media upload with required `--user-token`.
+- **media**: `download-share` command — 4.5.6 download media by share ID with optional `--output` and `--user-token`.
+
 ## [1.3.17] - 2026-07-29
 
 ### Added
