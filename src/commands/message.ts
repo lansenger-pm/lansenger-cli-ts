@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, outputList, checkError, parseJsonOption, parseFieldOrJson } from "../utils";
+import { getClient, outputResult, outputList, checkError, parseJsonOption, parseFieldOrJson, confirmHighRisk } from "../utils";
 
 export function registerMessageCommands(program: Command) {
   const cmd = program.command("message").description("Send and manage messages");
@@ -250,7 +250,11 @@ export function registerMessageCommands(program: Command) {
     .argument("<messageIds...>", "Message IDs to revoke")
     .option("--chat-type <type>", "staff, group, notification, account, or bot", "bot")
     .option("--sender-id <senderId>", "Sender staff ID (required for staff/group)", "")
+    .option("-y, --yes", "Confirm high-risk revoke before executing", false)
+    .option("--dry-run", "Validate inputs without revoking", false)
     .action(async (messageIds, opts) => {
+      confirmHighRisk("revoke", `messages ${messageIds}`, opts.yes, opts.dryRun);
+      if (opts.dryRun) return;
       const client = getClient();
       const result = await client.revokeMessage(messageIds, {
         chat_type: opts.chatType,

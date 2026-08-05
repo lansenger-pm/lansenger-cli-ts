@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError, commaList, parseJsonOption } from "../utils";
+import { getClient, outputResult, checkError, commaList, parseJsonOption, confirmHighRisk } from "../utils";
 
 export function registerTodoCommands(program: Command) {
   const cmd = program.command("todo").description("Manage todo tasks");
@@ -75,7 +75,11 @@ export function registerTodoCommands(program: Command) {
     .argument("<orgId>", "Organization ID")
     .option("--staff-id <staffId>", "Staff ID", "")
     .option("--user-token <token>", "User token", "")
+    .option("-y, --yes", "Confirm todo deletion before executing", false)
+    .option("--dry-run", "Validate inputs without deleting", false)
     .action(async (todotaskId, orgId, opts) => {
+      confirmHighRisk("delete", `todo ${todotaskId}`, opts.yes, opts.dryRun);
+      if (opts.dryRun) return;
       const client = getClient();
       const result = await client.deleteTodoTask(todotaskId, orgId, {
         staff_id: opts.staffId || undefined,
@@ -204,9 +208,13 @@ export function registerTodoCommands(program: Command) {
     .argument("<orgId>", "Organization ID")
     .option("--task-id <taskId>", "Todo task ID", "")
     .option("--user-token <token>", "User token", "")
+    .option("-y, --yes", "Confirm executor removal before executing", false)
+    .option("--dry-run", "Validate inputs without deleting executors", false)
     .action(async (executorIds, orgId, opts) => {
-      const client = getClient();
       const ids = commaList(executorIds);
+      confirmHighRisk("delete", `executors ${ids} from todo ${opts.taskId || orgId}`, opts.yes, opts.dryRun);
+      if (opts.dryRun) return;
+      const client = getClient();
       const result = await client.deleteExecutors(ids, orgId, {
         todotask_id: opts.taskId || undefined,
         user_token: opts.userToken || undefined,

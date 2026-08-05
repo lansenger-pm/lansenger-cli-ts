@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError } from "../utils";
+import { getClient, outputResult, checkError, confirmHighRisk } from "../utils";
 
 export function registerGroupCommands(program: Command) {
   const cmd = program.command("group").description("Manage groups");
@@ -147,7 +147,13 @@ export function registerGroupCommands(program: Command) {
     .option("-X, --remove <ids...>", "Staff IDs to remove (space-separated)")
     .option("-D, --add-dept <ids...>", "Department IDs to add (space-separated)")
     .option("--user-token <token>", "User token", "")
+    .option("-y, --yes", "Confirm member removal before executing", false)
+    .option("--dry-run", "Validate inputs without changing members", false)
     .action(async (groupId, opts) => {
+      if (opts.remove) {
+        confirmHighRisk("remove", `members ${opts.remove} from group ${groupId}`, opts.yes, opts.dryRun);
+        if (opts.dryRun) return;
+      }
       const client = getClient();
       const result = await client.updateGroupMembers(groupId, {
         add_user_list: opts.add || undefined,
@@ -164,7 +170,11 @@ export function registerGroupCommands(program: Command) {
     .description("Dismiss/delete a group")
     .argument("<groupId>", "Group ID to dismiss/delete")
     .option("--user-token <token>", "User token", "")
+    .option("-y, --yes", "Confirm group dismissal before executing", false)
+    .option("--dry-run", "Validate inputs without dismissing", false)
     .action(async (groupId, opts) => {
+      confirmHighRisk("dismiss", `group ${groupId}`, opts.yes, opts.dryRun);
+      if (opts.dryRun) return;
       const client = getClient();
       const result = await client.dismissGroup(groupId, { user_token: opts.userToken || undefined });
       checkError(result);

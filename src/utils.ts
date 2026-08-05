@@ -14,6 +14,48 @@ export function setActiveStaffId(val: string) { activeStaffId = val; }
 export function setAppToken(val: string) { activeAppToken = val; }
 export function setUserToken(val: string) { activeUserToken = val; }
 
+// Exit codes — stable contract for agents/scripts.
+export const EXIT_OK = 0;
+export const EXIT_ERROR = 1;              // generic / parameter / API failure
+export const EXIT_CONFIRM_REQUIRED = 10;  // high-risk write without --yes
+
+export function confirmHighRisk(action: string, resource: string, yes: boolean, dryRun: boolean): void {
+  const riskLabel = `${action} ${resource}`.trim();
+  if (dryRun) {
+    const payload = {
+      ok: true,
+      dry_run: true,
+      would_perform: riskLabel,
+      message: `Dry run: would ${riskLabel}. No action taken.`,
+    };
+    if (jsonOutput) {
+      console.log(JSON.stringify(payload, null, 2));
+    } else {
+      console.log(`\x1b[33mDRY RUN\x1b[0m — would ${riskLabel} (no action taken).`);
+    }
+    return;
+  }
+  if (yes) {
+    return;
+  }
+  const payload = {
+    ok: false,
+    error: {
+      type: "confirmation_required",
+      message: `High-risk operation requires confirmation: ${riskLabel}.`,
+      hint: "add --yes to confirm and proceed.",
+      risk: { level: "high-risk-write", action: riskLabel },
+    },
+  };
+  if (jsonOutput) {
+    console.error(JSON.stringify(payload, null, 2));
+  } else {
+    console.error(`\x1b[31mConfirmation required\x1b[0m — ${riskLabel}`);
+    console.error(`Re-run with --yes to confirm and proceed.`);
+  }
+  process.exit(EXIT_CONFIRM_REQUIRED);
+}
+
 export function getStore(): CredentialStore {
   return new CredentialStore(undefined, activeProfile);
 }

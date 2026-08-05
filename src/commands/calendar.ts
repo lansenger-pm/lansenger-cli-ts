@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, outputList, checkError, parseJsonOption } from "../utils";
+import { getClient, outputResult, outputList, checkError, parseJsonOption, confirmHighRisk } from "../utils";
 
 export function registerCalendarCommands(program: Command) {
   const cmd = program.command("calendar").description("Calendar and schedule operations");
@@ -88,7 +88,11 @@ export function registerCalendarCommands(program: Command) {
     .argument("<scheduleId>", "Schedule ID")
     .option("--user-token <token>", "User token", "")
     .option("--user-id <userId>", "User ID", "")
+    .option("-y, --yes", "Confirm schedule deletion before executing", false)
+    .option("--dry-run", "Validate inputs without deleting", false)
     .action(async (calendarId, scheduleId, opts) => {
+      confirmHighRisk("delete", `schedule ${scheduleId}`, opts.yes, opts.dryRun);
+      if (opts.dryRun) return;
       const client = getClient();
       const result = await client.deleteSchedule(calendarId, scheduleId, {
         user_token: opts.userToken || undefined,
@@ -173,9 +177,13 @@ export function registerCalendarCommands(program: Command) {
     .option("--reminder <reminder>", "Reminder type: yes or no", "")
     .option("--user-token <token>", "User token", "")
     .option("--user-id <userId>", "User ID", "")
+    .option("-y, --yes", "Confirm attendee removal before executing", false)
+    .option("--dry-run", "Validate inputs without deleting attendees", false)
     .action(async (calendarId, scheduleId, attendees, opts) => {
-      const client = getClient();
       const attendeesList = parseJsonOption(attendees);
+      confirmHighRisk("delete", `attendees ${JSON.stringify(attendeesList)} from schedule ${scheduleId}`, opts.yes, opts.dryRun);
+      if (opts.dryRun) return;
+      const client = getClient();
       const result = await client.deleteScheduleAttendees(calendarId, scheduleId, attendeesList, {
         reminder_type: opts.reminder || undefined,
         user_token: opts.userToken || undefined,
