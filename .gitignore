@@ -3,3 +3,8 @@ dist/
 .DS_Store
 .env
 *.tgz
+# Agent/IDE local files
+.trae/
+.claude/
+.cursor/
+.codex/
