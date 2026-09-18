@@ -19,6 +19,7 @@ import { registerHealthCommands } from "./commands/health";
 import { registerBotCommandCommands } from "./commands/bot-command";
 import { registerPersonalAppCommands } from "./commands/personal-app";
 import { registerNoticeCommands } from "./commands/notice";
+import { registerQuestionnaireCommands } from "./commands/questionnaire";
 
 const program = new Command();
 
@@ -67,5 +68,6 @@ registerHealthCommands(program);
 registerBotCommandCommands(program);
 registerPersonalAppCommands(program);
 registerNoticeCommands(program);
+registerQuestionnaireCommands(program);
 
 program.parse();

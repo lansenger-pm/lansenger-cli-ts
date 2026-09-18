@@ -87,6 +87,7 @@ lansenger health check
 | `bot-command` | 機器人命令 | `create`, `query`, `delete` |
 | `personal-app` | 個人應用 | `create`, `update`, `info`, `delete`, `list` |
 | `notice` | 官方帳號通知（通知系統） | `send`, `accounts` |
+| `questionnaire` | 問卷系統 | `save`, `save-questions`, `publish`, `withdraw`, `finish`, `delete`, `detail`, `brief`, `accounts`, `created-list`, `answers`, `answer-detail`, `answer-data`, `upload-url`, ... |
 | `oauth` | OAuth2 使用者認證 | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
 | `callback` | 回呼事件解析 | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
 | `media` | 媒體檔案操作 | `upload`, `upload-app`, `download`, `download-to-file`, `path` |

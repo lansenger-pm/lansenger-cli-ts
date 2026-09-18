@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.0] - 2026-09-18
+
+### Added
+
+- **questionnaire**: 问卷系统命令组（22 个子命令）— `save` / `save-questions` / `delete-question`（门禁）/ `publish` / `withdraw` / `finish` / `delete`（门禁）/ `detail` / `brief` / `answer-url` / `copy` / `query-codes` / `accounts` / `created-list` / `my-created` / `participated` / `answers` / `answer-detail` / `last-answer-detail` / `answer-data` / `last-answer-record` / `upload-url`。
+- **deps**: `lansenger-sdk-ts@^1.6.0`（questionnaires 域所在版本）。
+
+---
+
 ## [1.6.0] - 2026-09-17
 
 ### Added
