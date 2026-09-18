@@ -18,6 +18,7 @@ import { registerChatCommands } from "./commands/chat";
 import { registerHealthCommands } from "./commands/health";
 import { registerBotCommandCommands } from "./commands/bot-command";
 import { registerPersonalAppCommands } from "./commands/personal-app";
+import { registerNoticeCommands } from "./commands/notice";
 
 const program = new Command();
 
@@ -65,5 +66,6 @@ registerChatCommands(program);
 registerHealthCommands(program);
 registerBotCommandCommands(program);
 registerPersonalAppCommands(program);
+registerNoticeCommands(program);
 
 program.parse();

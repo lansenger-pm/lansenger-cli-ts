@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0] - 2026-09-17
+
+### Added
+
+- **notice**: `notice send` / `notice accounts` 子命令 — 通知系统（官方账号通知），命令语法与 Python/Go 版一致。`--release-range` / `--resources` 走 `parseJsonOption`，投放列表走 `commaList`。
+- **deps**: `lansenger-sdk-ts@^1.5.0`（notices 域所在版本）。
+
+### Note
+
+- CHANGELOG 缺 1.5.0 条目（该版本发布时未补记），自 1.6.0 起恢复随版本记录。
+
+---
+
 ## [1.4.0] - 2026-07-29
 
 ### Added

@@ -86,6 +86,7 @@ lansenger health check
 | `todo` | Todo task management | `create`, `update`, `update-status`, `delete`, `list`, `fetch-by-id`, `fetch-by-source`, `status-counts`, `executor-status`, `add-executors`, `delete-executors`, `executor-list` |
 | `bot-command` | Bot slash commands | `create`, `query`, `delete` |
 | `personal-app` | Personal apps/bots | `create`, `update`, `info`, `delete`, `list` |
+| `notice` | Notices via official accounts (通知系统) | `send`, `accounts` |
 | `oauth` | OAuth2 user auth | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
 | `callback` | Callback event parsing | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
 | `media` | Media file operations | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
