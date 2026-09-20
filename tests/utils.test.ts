@@ -41,6 +41,38 @@ describe("wrapWithAutoUserToken", () => {
     expect(lastArg.user_id).toBe("explicit_user");
   });
 
+  test("injects create_user_id when opts has an empty create_user_id", async () => {
+    const store = mockStore();
+    const staffId = "staff_123";
+
+    const methodSpy = jest.fn().mockResolvedValue({ success: true });
+    const raw = { sendNotice: methodSpy };
+
+    const proxy = wrapWithAutoUserToken(raw as any, store, staffId);
+
+    await (proxy as any).sendNotice({ create_user_id: "" });
+
+    const callArgs = methodSpy.mock.calls[0];
+    const lastArg = callArgs[callArgs.length - 1];
+    expect(lastArg.create_user_id).toBe(staffId);
+  });
+
+  test("does not override create_user_id when already set", async () => {
+    const store = mockStore();
+    const staffId = "staff_123";
+
+    const methodSpy = jest.fn().mockResolvedValue({ success: true });
+    const raw = { sendNotice: methodSpy };
+
+    const proxy = wrapWithAutoUserToken(raw as any, store, staffId);
+
+    await (proxy as any).sendNotice({ create_user_id: "explicit_user" });
+
+    const callArgs = methodSpy.mock.calls[0];
+    const lastArg = callArgs[callArgs.length - 1];
+    expect(lastArg.create_user_id).toBe("explicit_user");
+  });
+
   test("passes through non-function properties unchanged", () => {
     const store = mockStore();
     const proxy = wrapWithAutoUserToken({ someProp: "hello" } as any, store, "staff_123");

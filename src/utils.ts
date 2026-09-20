@@ -112,12 +112,14 @@ export function wrapWithAutoUserToken(client: LansengerClient, store: Credential
         ) {
           const opts = args[lastIdx] as Record<string, any>;
           const needsUserId = "user_id" in opts && !opts.user_id;
+          const needsCreateUserId = "create_user_id" in opts && !opts.create_user_id;
           const needsUserToken = "user_token" in opts && !opts.user_token;
 
-          if (needsUserId || needsUserToken) {
+          if (needsUserId || needsCreateUserId || needsUserToken) {
             return (async () => {
               const newOpts: Record<string, any> = { ...opts };
               if (needsUserId) newOpts.user_id = staffId;
+              if (needsCreateUserId) newOpts.create_user_id = staffId;
               if (needsUserToken) {
                 const token = await resolveUserToken();
                 newOpts.user_token = token;
