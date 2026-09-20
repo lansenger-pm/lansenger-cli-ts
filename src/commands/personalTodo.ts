@@ -21,7 +21,7 @@ export function registerPersonalTodoCommands(program: Command) {
     .option("--priority <n>", "Priority: 0=low, 1=normal, 2=urgent, 3=very urgent", "1")
     .option("--description <text>", "Description", "")
     .option("--parent-code <code>", "Parent todo code", "")
-    .option("--finish-time <ms>", "Finish time in epoch milliseconds", "")
+    .option("--finish-time <ms>", "Finish time in epoch milliseconds", "0")
     .option("--status-tag-no <label>", "Unfinished status label", "")
     .option("--status-tag-yes <label>", "Finished status label", "")
     .option("--subscribe-status <n>", "Subscribe: 1=yes, 0=no", "")
@@ -43,7 +43,7 @@ export function registerPersonalTodoCommands(program: Command) {
         {
           description: opts.description || undefined,
           parent_code: opts.parentCode || undefined,
-          finish_time: opts.finishTime === "" ? null : Number(opts.finishTime),
+          finish_time: Number(opts.finishTime),
           status_tag_no: opts.statusTagNo || undefined,
           status_tag_yes: opts.statusTagYes || undefined,
           subscribe_status: opts.subscribeStatus === "" ? undefined : Number(opts.subscribeStatus),
