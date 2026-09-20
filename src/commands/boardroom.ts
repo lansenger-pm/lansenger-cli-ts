@@ -91,8 +91,11 @@ export function registerBoardroomCommands(program: Command) {
     .option("--people <n>", "Attendee count", "")
     .option("--toastmaster <name>", "Host (max 10 chars)", "")
     .option("--leader <name>", "Attending leader (max 200 chars)", "")
+    .option("--leader-attend <flag>", "Leader attendance: 0=attend, 1=not attend", "")
     .option("--is-video <flag>", "Video meeting: 0=on, 1=off", "")
     .option("--video-name <name>", "Video meeting name", "")
+    .option("--other-demand <text>", "Other meeting requirements", "")
+    .option("--table-cards <flag>", "Table cards: 0=on, 1=off", "")
     .option("--invite <ids>", "Comma-separated attendee staff IDs", "")
     .option("--approvers <ids>", "Comma-separated approver staff IDs", "")
     .option("--reserve-type <type>", "0=single, 1=repeat", "0")
@@ -111,8 +114,11 @@ export function registerBoardroomCommands(program: Command) {
         people_number: opts.people || undefined,
         toastmaster: opts.toastmaster || undefined,
         leader: opts.leader || undefined,
+        leader_attend: opts.leaderAttend || undefined,
         is_video: opts.isVideo || undefined,
         video_name: opts.videoName || undefined,
+        other_demand: opts.otherDemand || undefined,
+        table_cards: opts.tableCards || undefined,
         invitation_user_list: opts.invite ? commaList(opts.invite) : undefined,
         user_list: opts.approvers ? commaList(opts.approvers) : undefined,
         reserve_type: opts.reserveType,

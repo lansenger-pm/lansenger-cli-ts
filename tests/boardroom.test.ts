@@ -114,6 +114,9 @@ describe("boardroom commands", () => {
       "--reserve-type", "1",
       "--repeat-days", "1,3",
       "--invite", "u1,u2",
+      "--leader-attend", "0",
+      "--other-demand", "需要投影",
+      "--table-cards", "1",
     ]);
     expect(mockReserveBoardroom).toHaveBeenCalledWith("room1", "周会", expect.objectContaining({
       grading_id: "g1",
@@ -123,6 +126,9 @@ describe("boardroom commands", () => {
       reserve_type: "1",
       repeat_days: [1, 3],
       invitation_user_list: ["u1", "u2"],
+      leader_attend: "0",
+      other_demand: "需要投影",
+      table_cards: "1",
     }));
   });
 

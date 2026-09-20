@@ -255,6 +255,7 @@ export function registerQuestionnaireCommands(program: Command) {
     .option("--page <no>", "Page number", "1")
     .option("--size <n>", "Page size", "10")
     .option("--status <status>", "1=draft, 2=ongoing, 3=withdrawn, 4=finished", "")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (accountCode, opts) => {
       const client = getClient();
@@ -262,6 +263,7 @@ export function registerQuestionnaireCommands(program: Command) {
         page_no: Number(opts.page),
         page_size: Number(opts.size),
         status: opts.status === "" ? undefined : Number(opts.status),
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -276,6 +278,7 @@ export function registerQuestionnaireCommands(program: Command) {
     .option("--size <n>", "Page size", "10")
     .option("--title <title>", "Filter by title", "")
     .option("--status <status>", "1=draft, 2=ongoing, 3=withdrawn, 4=finished", "")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (orgId, opts) => {
       const client = getClient();
@@ -284,6 +287,7 @@ export function registerQuestionnaireCommands(program: Command) {
         page_size: Number(opts.size),
         title: opts.title || undefined,
         status: opts.status === "" ? undefined : Number(opts.status),
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -297,6 +301,7 @@ export function registerQuestionnaireCommands(program: Command) {
     .option("--page <no>", "Page number", "1")
     .option("--size <n>", "Page size", "10")
     .option("--status <status>", "2=ongoing, 4=finished", "")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (orgId, opts) => {
       const client = getClient();
@@ -304,6 +309,7 @@ export function registerQuestionnaireCommands(program: Command) {
         page_no: Number(opts.page),
         page_size: Number(opts.size),
         status: opts.status === "" ? undefined : Number(opts.status),
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -317,12 +323,14 @@ export function registerQuestionnaireCommands(program: Command) {
     .argument("<questionnaireCode>", "Questionnaire code")
     .option("--page <no>", "Page number", "1")
     .option("--size <n>", "Page size", "10")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (accountCode, questionnaireCode, opts) => {
       const client = getClient();
       const result = await client.fetchAnswerRecords(accountCode, questionnaireCode, {
         page_no: Number(opts.page),
         page_size: Number(opts.size),
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -334,10 +342,12 @@ export function registerQuestionnaireCommands(program: Command) {
     .description("Fetch one answer record's full detail (questionnaire + questions + answers)")
     .argument("<accountCode>", "Official account CODE")
     .argument("<answerCode>", "Answer record code")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (accountCode, answerCode, opts) => {
       const client = getClient();
       const result = await client.fetchQuestionnaireAnswerDetail(accountCode, answerCode, {
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -349,11 +359,13 @@ export function registerQuestionnaireCommands(program: Command) {
     .description("Fetch the user's last answer detail for a questionnaire")
     .argument("<questionnaireCode>", "Questionnaire code")
     .option("--answer-record-code <code>", "Specific answer record code", "")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (questionnaireCode, opts) => {
       const client = getClient();
       const result = await client.fetchQuestionnaireLastAnswerDetail(questionnaireCode, {
         answer_record_code: opts.answerRecordCode || undefined,
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -367,12 +379,14 @@ export function registerQuestionnaireCommands(program: Command) {
     .argument("<questionnaireCode>", "Questionnaire code")
     .option("--page <no>", "Page number", "1")
     .option("--size <n>", "Page size", "10")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (accountCode, questionnaireCode, opts) => {
       const client = getClient();
       const result = await client.fetchAnswerData(accountCode, questionnaireCode, {
         page_no: Number(opts.page),
         page_size: Number(opts.size),
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);
@@ -384,11 +398,13 @@ export function registerQuestionnaireCommands(program: Command) {
     .description("Fetch the user's last answer record (main table only)")
     .argument("<questionnaireCode>", "Questionnaire code")
     .option("--answer-record-code <code>", "Specific answer record code", "")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (questionnaireCode, opts) => {
       const client = getClient();
       const result = await client.fetchQuestionnaireLastAnswerRecord(questionnaireCode, {
         answer_record_code: opts.answerRecordCode || undefined,
+        user_id: opts.userId || undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);

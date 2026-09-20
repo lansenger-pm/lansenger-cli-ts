@@ -5,6 +5,7 @@ const mockSaveQuestionnaireQuestions = jest.fn();
 const mockDeleteQuestionnaireQuestion = jest.fn();
 const mockDeleteQuestionnaire = jest.fn();
 const mockFetchCreatedQuestionnaires = jest.fn();
+const mockFetchParticipatedQuestionnaires = jest.fn();
 const mockFetchQuestionnaireUploadUrl = jest.fn();
 
 jest.mock("../src/utils", () => ({
@@ -15,6 +16,7 @@ jest.mock("../src/utils", () => ({
     deleteQuestionnaireQuestion: mockDeleteQuestionnaireQuestion,
     deleteQuestionnaire: mockDeleteQuestionnaire,
     fetchCreatedQuestionnaires: mockFetchCreatedQuestionnaires,
+    fetchParticipatedQuestionnaires: mockFetchParticipatedQuestionnaires,
     fetchQuestionnaireUploadUrl: mockFetchQuestionnaireUploadUrl,
   })),
   outputResult: jest.fn(),
@@ -132,6 +134,20 @@ describe("questionnaire commands", () => {
       page_no: 2,
       page_size: 20,
       status: 2,
+      user_token: undefined,
+    });
+  });
+
+  test("participated passes explicit user id", async () => {
+    mockFetchParticipatedQuestionnaires.mockResolvedValue({ success: true });
+    await run(build(), [
+      "questionnaire", "participated", "org1", "--user-id", "staff-001",
+    ]);
+    expect(mockFetchParticipatedQuestionnaires).toHaveBeenCalledWith("org1", {
+      page_no: 1,
+      page_size: 10,
+      status: undefined,
+      user_id: "staff-001",
       user_token: undefined,
     });
   });
