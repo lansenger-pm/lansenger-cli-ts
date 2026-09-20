@@ -86,6 +86,7 @@ lansenger health check
 | `personal-app` | Applications personnelles | `create`, `update`, `info`, `delete`, `list` |
 | `notice` | Notifications via comptes officiels (通知系统) | `send`, `accounts` |
 | `questionnaire` | Questionnaires (问卷系统) | `save`, `save-questions`, `publish`, `withdraw`, `finish`, `delete`, `detail`, `brief`, `accounts`, `created-list`, `answers`, `answer-detail`, `answer-data`, `upload-url`, ... |
+| `boardroom` | Réservation de salles (会议室预定 V2) | `rooms`, `room-detail`, `schedule`, `reserve-detail`, `reserve`, `edit-reserve`, `cancel`, `confirm-sign`, `my-reserves`, `gradings`, `area-offices` |
 | `oauth` | Authentification OAuth2 | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
 | `callback` | Analyse des callbacks | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
 | `media` | Fichiers média | `upload`, `upload-app`, `download`, `download-to-file`, `path` |

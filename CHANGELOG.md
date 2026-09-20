@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.9.0] - 2026-09-18
+
+### Added
+
+- **boardroom**: 会议室预定 V2 命令组（11 个子命令）— `rooms` / `room-detail` / `schedule` / `reserve-detail` / `reserve` / `edit-reserve` / `cancel`（门禁）/ `confirm-sign` / `my-reserves` / `gradings` / `area-offices`。多数命令需 `--grading-id`（先 `boardroom gradings` 查询）。
+- **deps**: `lansenger-sdk-ts@^1.8.0`（boardrooms 域所在版本）。
+
+### Fixed
+
+- **version**: 补上问卷轮漏改的 `tests/constants.test.ts` VERSION 断言（SDK 1.7.0 时未同步）。
+
+---
+
 ## [1.7.0] - 2026-09-18
 
 ### Added
