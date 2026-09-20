@@ -73,10 +73,13 @@ describe("personal-todo commands", () => {
     await run(build(), [
       "personal-todo", "update", "TASK1", "org1",
       "--update-fields", "subject,dueTime", "--subject", "新主题", "--due-time", "300",
+      "--create-user-id", "u1", "--appid", "app1",
     ]);
     expect(mockUpdatePersonalTodo).toHaveBeenCalledWith(
       "TASK1", "org1", ["subject", "dueTime"],
-      expect.objectContaining({ subject: "新主题", due_time: 300 }),
+      expect.objectContaining({
+        subject: "新主题", due_time: 300, create_user_id: "u1", appid: "app1",
+      }),
     );
   });
 
