@@ -21,6 +21,7 @@ import { registerPersonalAppCommands } from "./commands/personal-app";
 import { registerNoticeCommands } from "./commands/notice";
 import { registerQuestionnaireCommands } from "./commands/questionnaire";
 import { registerBoardroomCommands } from "./commands/boardroom";
+import { registerPersonalTodoCommands } from "./commands/personalTodo";
 
 const program = new Command();
 
@@ -71,5 +72,6 @@ registerPersonalAppCommands(program);
 registerNoticeCommands(program);
 registerQuestionnaireCommands(program);
 registerBoardroomCommands(program);
+registerPersonalTodoCommands(program);
 
 program.parse();

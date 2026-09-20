@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.10.0] - 2026-09-20
+
+### Added
+
+- **personal-todo**: 个人待办命令组（6 个子命令）— `save` / `update` / `list` / `upload-resource` / `download-url` / `upload-url`。
+- **personal-todo**: `upload-resource` 读取本地文件并自动 base64 编码。
+- **deps**: `lansenger-sdk-ts@^1.9.0`（personal_todos 域所在版本）。
+
+### Notes
+
+- 与应用身份 `todo` 命令组完全分离；`orgId` 必须显式传入，服务端当前不提供个人待办完成/删除能力。
+
+---
+
 ## [1.9.0] - 2026-09-18
 
 ### Added
