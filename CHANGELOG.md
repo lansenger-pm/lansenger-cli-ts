@@ -7,52 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.10.0] - 2026-09-20
+## [1.5.1] - 2026-09-20
 
 ### Added
 
-- **personal-todo**: 个人待办命令组（6 个子命令）— `save` / `update` / `list` / `upload-resource` / `download-url` / `upload-url`。
-- **personal-todo**: `upload-resource` 读取本地文件并自动 base64 编码。
-- **deps**: `lansenger-sdk-ts@^1.9.0`（personal_todos 域所在版本）。
-
-### Notes
-
-- 与应用身份 `todo` 命令组完全分离；`orgId` 必须显式传入，服务端当前不提供个人待办完成/删除能力。
-
----
-
-## [1.9.0] - 2026-09-18
-
-### Added
-
-- **boardroom**: 会议室预定 V2 命令组（11 个子命令）— `rooms` / `room-detail` / `schedule` / `reserve-detail` / `reserve` / `edit-reserve` / `cancel`（门禁）/ `confirm-sign` / `my-reserves` / `gradings` / `area-offices`。多数命令需 `--grading-id`（先 `boardroom gradings` 查询）。
-- **deps**: `lansenger-sdk-ts@^1.8.0`（boardrooms 域所在版本）。
+- **notice**: 新增 `notice send` / `notice accounts`。
+- **questionnaire**: 新增 22 个子命令，删除类接入高风险门禁。
+- **boardroom**: 新增 11 个子命令及高风险取消门禁。
+- **personal-todo**: 新增 6 个子命令和本地文件 Base64 上传。
 
 ### Fixed
 
-- **version**: 补上问卷轮漏改的 `tests/constants.test.ts` VERSION 断言（SDK 1.7.0 时未同步）。
+- 修复通知 `--as` 自动补 `createUserId`。
+- 补齐会议室可选参数和 `gradings --user-id/--org-id`。
+- 问卷参与与答卷类命令补齐 `--user-id`。
+- 同步 `package-lock.json` 中 `lansenger-sdk-ts` 的版本与 integrity。
 
----
+### Notes
 
-## [1.7.0] - 2026-09-18
-
-### Added
-
-- **questionnaire**: 问卷系统命令组（22 个子命令）— `save` / `save-questions` / `delete-question`（门禁）/ `publish` / `withdraw` / `finish` / `delete`（门禁）/ `detail` / `brief` / `answer-url` / `copy` / `query-codes` / `accounts` / `created-list` / `my-created` / `participated` / `answers` / `answer-detail` / `last-answer-detail` / `answer-data` / `last-answer-record` / `upload-url`。
-- **deps**: `lansenger-sdk-ts@^1.6.0`（questionnaires 域所在版本）。
-
----
-
-## [1.6.0] - 2026-09-17
-
-### Added
-
-- **notice**: `notice send` / `notice accounts` 子命令 — 通知系统（官方账号通知），命令语法与 Python/Go 版一致。`--release-range` / `--resources` 走 `parseJsonOption`，投放列表走 `commaList`。
-- **deps**: `lansenger-sdk-ts@^1.5.0`（notices 域所在版本）。
-
-### Note
-
-- CHANGELOG 缺 1.5.0 条目（该版本发布时未补记），自 1.6.0 起恢复随版本记录。
+- **deps**: `lansenger-sdk-ts@^1.4.5`。
+- 个人待办与应用身份 `todo` 完全分离，`orgId` 必须显式传入。
 
 ---
 
