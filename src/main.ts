@@ -22,8 +22,8 @@ import { registerNoticeCommands } from "./commands/notice";
 import { registerQuestionnaireCommands } from "./commands/questionnaire";
 import { registerBoardroomCommands } from "./commands/boardroom";
 import { registerPersonalTodoCommands } from "./commands/personalTodo";
-import { registerPersonalTodoCommands } from "./commands/videoconference";
-import { registerVideoconferenceCommands } from "./commands/personalTodo";
+import { registerPersonalTodoCommands } from "./commands/personalTodo";
+import { registerVideoconferenceCommands } from "./commands/videoconference";
 
 const program = new Command();
 
