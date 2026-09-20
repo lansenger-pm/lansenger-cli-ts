@@ -6,6 +6,7 @@ const mockReserveBoardroom = jest.fn();
 const mockCancelBoardroomReserve = jest.fn();
 const mockFetchMyBoardroomReserves = jest.fn();
 const mockFetchBoardroomAreaOffices = jest.fn();
+const mockFetchBoardroomGradings = jest.fn();
 
 jest.mock("../src/utils", () => ({
   __esModule: true,
@@ -16,6 +17,7 @@ jest.mock("../src/utils", () => ({
     cancelBoardroomReserve: mockCancelBoardroomReserve,
     fetchMyBoardroomReserves: mockFetchMyBoardroomReserves,
     fetchBoardroomAreaOffices: mockFetchBoardroomAreaOffices,
+    fetchBoardroomGradings: mockFetchBoardroomGradings,
   })),
   outputResult: jest.fn(),
   checkError: jest.fn(),
@@ -91,6 +93,18 @@ describe("boardroom commands", () => {
       page: 2,
       limit: 20,
     }));
+  });
+
+  test("gradings passes user and organization identity", async () => {
+    mockFetchBoardroomGradings.mockResolvedValue({ success: true });
+    await run(build(), [
+      "boardroom", "gradings", "--user-id", "staff-1", "--org-id", "org-1",
+    ]);
+    expect(mockFetchBoardroomGradings).toHaveBeenCalledWith({
+      lx_user_id: "staff-1",
+      org_id: "org-1",
+      user_token: undefined,
+    });
   });
 
   test("schedule passes required grading id", async () => {

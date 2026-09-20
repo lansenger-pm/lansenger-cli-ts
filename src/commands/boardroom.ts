@@ -225,10 +225,16 @@ export function registerBoardroomCommands(program: Command) {
   cmd
     .command("gradings")
     .description("Fetch gradings visible to the user (gradingId source)")
+    .option("--user-id <userId>", "User ID (omit when --as/--user-token is set)", "")
+    .option("--org-id <orgId>", "Organization ID (omit when --as/--user-token is set)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (opts) => {
       const client = getClient();
-      const result = await client.fetchBoardroomGradings({ user_token: opts.userToken || undefined });
+      const result = await client.fetchBoardroomGradings({
+        lx_user_id: opts.userId || undefined,
+        org_id: opts.orgId || undefined,
+        user_token: opts.userToken || undefined,
+      });
       checkError(result);
       outputResult(result, ["total", "gradings"], "Boardroom Gradings");
     });
