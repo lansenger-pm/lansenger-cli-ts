@@ -9,6 +9,7 @@ const mockFetchPersonalTodoList = jest.fn();
 const mockUploadPersonalTodoResource = jest.fn();
 const mockFetchPersonalTodoResourceDownloadUrl = jest.fn();
 const mockFetchPersonalTodoResourceUploadUrl = jest.fn();
+const mockOutputList = jest.fn();
 
 jest.mock("../src/utils", () => ({
   __esModule: true,
@@ -21,6 +22,7 @@ jest.mock("../src/utils", () => ({
     fetchPersonalTodoResourceUploadUrl: mockFetchPersonalTodoResourceUploadUrl,
   })),
   outputResult: jest.fn(),
+  outputList: mockOutputList,
   checkError: jest.fn(),
   commaList: (v: string) => v.split(",").map((s: string) => s.trim()).filter(Boolean),
   parseJsonOption: (v: string) => JSON.parse(v),
@@ -79,7 +81,10 @@ describe("personal-todo commands", () => {
   });
 
   test("list parses pagination and status", async () => {
-    mockFetchPersonalTodoList.mockResolvedValue({ success: true, items: [] });
+    mockFetchPersonalTodoList.mockResolvedValue({
+      success: true,
+      items: [{ taskCode: "TASK1", summarySubject: "方案", status: 0, dueTime: 200 }],
+    });
     await run(build(), [
       "personal-todo", "list", "org1", "u1", "--page", "2", "--size", "20", "--status", "0",
     ]);
@@ -91,6 +96,7 @@ describe("personal-todo commands", () => {
       app_category_name: undefined,
       user_token: undefined,
     });
+    expect(mockOutputList).toHaveBeenCalled();
   });
 
   test("upload-resource reads the local file", async () => {

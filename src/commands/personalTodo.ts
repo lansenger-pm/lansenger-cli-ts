@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { Command } from "commander";
-import { getClient, outputResult, checkError, commaList, parseJsonOption } from "../utils";
+import { getClient, outputResult, outputList, checkError, commaList, parseJsonOption, jsonOutput } from "../utils";
 
 function jsonList(value: string | undefined): any[] | undefined {
   return value ? parseJsonOption(value) : undefined;
@@ -122,6 +122,14 @@ export function registerPersonalTodoCommands(program: Command) {
       });
       checkError(result);
       outputResult(result, ["page_no", "page_size", "pages", "total", "has_more"], "Personal Todos");
+      if (result.items && !jsonOutput) {
+        outputList(result.items, ["Task Code", "Subject", "Status", "Due Time"], item => [
+          String(item.taskCode ?? ""),
+          String(item.summarySubject ?? ""),
+          String(item.status ?? ""),
+          String(item.dueTime ?? ""),
+        ]);
+      }
     });
 
   cmd
