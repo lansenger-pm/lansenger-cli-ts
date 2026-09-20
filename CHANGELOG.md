@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0] - 2026-09-21
+
+### Added
+
+- **videoconference**: new `videoconference` command group with 20 subcommands covering the full 视频会议开放能力 surface — `create`, `modify`, `cancel` / `stop` (high-risk write gate), `detail`, `list`, `record-list`, `simplerecord`, `fixroom-list`, `status`, `subscribe`, `params`, `history`, `active`, `member-control`, `invite`, `member-list`, `vod-list`, `vod-download`, `org-conf`. JSON members/params passed as JSON strings, mids as comma-separated lists; supports `--json`, global `--user-token`, and external `--app-token` mode.
+- **dep**: `lansenger-sdk-ts` bumped to `^1.5.0` (videoconference domain).
+- Unit tests for the command group registration (20 subcommands, options, high-risk gate wiring).
+
 ## [1.5.1] - 2026-09-20
 
 ### Added
