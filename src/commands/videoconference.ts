@@ -57,6 +57,7 @@ export function registerVideoconferenceCommands(program: Command) {
     .option("--group-new <flag>", "0/1", "0")
     .option("--conf-password <pwd>", "Meeting password", "")
     .option("--control-password <pwd>", "Host control password", "")
+    .option("--user-stop-time <ts>", "Auto stop time (epoch ms, PRS >=3.8)", "")
     .option("--user-token <token>", "User token", "")
     .action(async (mid, subject, startTime, members, orgId, operator, opts) => {
       const client = getClient();
@@ -65,6 +66,7 @@ export function registerVideoconferenceCommands(program: Command) {
         org_id: orgId, operator, auto_record: parseInt(opts.autoRecord, 10),
         type: parseInt(opts.type, 10), group_new: parseInt(opts.groupNew, 10),
         conf_password: opts.confPassword || undefined, control_password: opts.controlPassword || undefined,
+        user_stop_time: opts.userStopTime ? parseInt(opts.userStopTime, 10) : undefined,
         user_token: opts.userToken || undefined,
       });
       checkError(result);

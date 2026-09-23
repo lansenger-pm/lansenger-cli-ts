@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **videoconference**: `modify` now accepts `--user-stop-time` (auto-stop time, epoch ms), matching `create`. Previously the value could only be set at creation — modifying silently reset the meeting end time to start time + 24h.
+- **videoconference**: `member-control` relies on the server to validate `opCode` (the SDK no longer rejects unknown values locally).
+
 ## [1.6.0] - 2026-09-21
 
 ### Added

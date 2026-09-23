@@ -60,4 +60,21 @@ describe("videoconference command group", () => {
       .find(c => c.name() === "vod-download")!;
     expect(sub.options.map(o => o.long)).toContain("--user-token");
   });
+
+  test("create and modify both expose --user-stop-time", () => {
+    const program = makeProgram();
+    const vc = program.commands.find(c => c.name() === "videoconference")!;
+    for (const name of ["create", "modify"]) {
+      const sub = vc.commands.find(c => c.name() === name)!;
+      expect(sub.options.map(o => o.long)).toContain("--user-stop-time");
+    }
+  });
+
+  test("member-control exposes no opCode whitelist option (server is authoritative)", () => {
+    const program = makeProgram();
+    const sub = program.commands
+      .find(c => c.name() === "videoconference")!.commands
+      .find(c => c.name() === "member-control")!;
+    expect(sub.options.map(o => o.long)).not.toContain("--op-code");
+  });
 });
