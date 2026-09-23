@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.6.1] - 2026-09-23
 
 ### Fixed
 
 - **videoconference**: `modify` now accepts `--user-stop-time` (auto-stop time, epoch ms), matching `create`. Previously the value could only be set at creation — modifying silently reset the meeting end time to start time + 24h.
 - **videoconference**: `member-control` relies on the server to validate `opCode` (the SDK no longer rejects unknown values locally).
+- **dep**: `lansenger-sdk-ts` bumped to `^1.6.1` — first SDK release carrying `user_stop_time` on `modifyMeeting`, so `--user-stop-time` requires it.
 
 ## [1.6.0] - 2026-09-21
 
