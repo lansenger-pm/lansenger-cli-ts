@@ -4,17 +4,15 @@ import { Command } from "commander";
 const mockDismissGroup = jest.fn();
 const mockRevokeMessage = jest.fn();
 const mockUpdateGroupMembers = jest.fn();
-const mockDeleteTodoTask = jest.fn();
 const mockDeleteSchedule = jest.fn();
 
 jest.mock("../src/utils", () => ({
   __esModule: true,
   getClient: jest.fn(() => ({
     dismissGroup: mockDismissGroup,
-    revokeMessage: mockRevokeMessage,
-    updateGroupMembers: mockUpdateGroupMembers,
-    deleteTodoTask: mockDeleteTodoTask,
-    deleteSchedule: mockDeleteSchedule,
+      revokeMessage: mockRevokeMessage,
+      updateGroupMembers: mockUpdateGroupMembers,
+      deleteSchedule: mockDeleteSchedule,
   })),
   outputResult: jest.fn(),
   outputList: jest.fn(),
@@ -29,7 +27,6 @@ jest.mock("../src/utils", () => ({
 
 import { registerGroupCommands } from "../src/commands/group";
 import { registerMessageCommands } from "../src/commands/message";
-import { registerTodoCommands } from "../src/commands/todo";
 import { registerCalendarCommands } from "../src/commands/calendar";
 
 const realExit = process.exit;
@@ -66,7 +63,6 @@ function build(): Command {
   const program = new Command();
   registerGroupCommands(program);
   registerMessageCommands(program);
-  registerTodoCommands(program);
   registerCalendarCommands(program);
   return program;
 }
@@ -106,13 +102,7 @@ describe("high-risk gate", () => {
     expect(mockUpdateGroupMembers).not.toHaveBeenCalled();
   });
 
-  test("todo delete without --yes exits 10", async () => {
-    const code = await parseExit(build(), ["todo", "delete", "t1", "org1"]);
-    expect(code).toBe(10);
-    expect(mockDeleteTodoTask).not.toHaveBeenCalled();
-  });
-
-  test("calendar delete-schedule without --yes exits 10", async () => {
+    test("calendar delete-schedule without --yes exits 10", async () => {
     const code = await parseExit(build(), ["calendar", "delete-schedule", "cal1", "sch1"]);
     expect(code).toBe(10);
     expect(mockDeleteSchedule).not.toHaveBeenCalled();
@@ -126,15 +116,9 @@ describe("high-risk gate", () => {
     expect(mockDismissGroup).not.toHaveBeenCalled();
   });
 
-  test("group update-members --remove --dry-run exits 0 and no API call", async () => {
-    const code = await parseExit(build(), ["group", "update-members", "g1", "--remove", "u1", "u2", "--dry-run"]);
-    expect(code).toBe(null);
-    expect(mockUpdateGroupMembers).not.toHaveBeenCalled();
-  });
-
-  test("todo delete --yes calls API", async () => {
-    const code = await parseExit(build(), ["todo", "delete", "t1", "org1", "--yes"]);
-    expect(code).toBe(null);
-    expect(mockDeleteTodoTask).toHaveBeenCalledTimes(1);
-  });
+    test("group update-members --remove --dry-run exits 0 and no API call", async () => {
+      const code = await parseExit(build(), ["group", "update-members", "g1", "--remove", "u1", "u2", "--dry-run"]);
+      expect(code).toBe(null);
+      expect(mockUpdateGroupMembers).not.toHaveBeenCalled();
+    });
 });

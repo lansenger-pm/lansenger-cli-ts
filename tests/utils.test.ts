@@ -1,4 +1,4 @@
-import { wrapWithAutoUserToken } from "../src/utils";
+import { wrapWithAutoUserToken, parseGlobalVersionFlag } from "../src/utils";
 import { CredentialStore } from "lansenger-sdk-ts";
 
 function mockStore(): CredentialStore {
@@ -46,11 +46,11 @@ describe("wrapWithAutoUserToken", () => {
     const staffId = "staff_123";
 
     const methodSpy = jest.fn().mockResolvedValue({ success: true });
-    const raw = { sendNotice: methodSpy };
+    const raw = { createRecord: methodSpy };
 
     const proxy = wrapWithAutoUserToken(raw as any, store, staffId);
 
-    await (proxy as any).sendNotice({ create_user_id: "" });
+    await (proxy as any).createRecord({ create_user_id: "" });
 
     const callArgs = methodSpy.mock.calls[0];
     const lastArg = callArgs[callArgs.length - 1];
@@ -62,11 +62,11 @@ describe("wrapWithAutoUserToken", () => {
     const staffId = "staff_123";
 
     const methodSpy = jest.fn().mockResolvedValue({ success: true });
-    const raw = { sendNotice: methodSpy };
+    const raw = { createRecord: methodSpy };
 
     const proxy = wrapWithAutoUserToken(raw as any, store, staffId);
 
-    await (proxy as any).sendNotice({ create_user_id: "explicit_user" });
+    await (proxy as any).createRecord({ create_user_id: "explicit_user" });
 
     const callArgs = methodSpy.mock.calls[0];
     const lastArg = callArgs[callArgs.length - 1];
@@ -122,5 +122,45 @@ describe("wrapWithAutoUserToken", () => {
     const result = await (proxy as any).someMethod();
     expect(result).toBe("ok");
     expect(methodSpy).toHaveBeenCalledWith();
+  });
+});
+
+describe("parseGlobalVersionFlag", () => {
+  test("detects -v and --version", () => {
+    expect(parseGlobalVersionFlag(["-v"])).toEqual({ requested: true, json: false });
+    expect(parseGlobalVersionFlag(["--version"])).toEqual({ requested: true, json: false });
+  });
+
+  test("reports json output when -j/--json is also global", () => {
+    expect(parseGlobalVersionFlag(["-j", "-v"])).toEqual({ requested: true, json: true });
+    expect(parseGlobalVersionFlag(["--json", "--version"])).toEqual({ requested: true, json: true });
+  });
+
+  test("skips values of global options that take one", () => {
+    expect(parseGlobalVersionFlag(["--profile", "codex-stage-v3", "-v"]))
+      .toEqual({ requested: true, json: false });
+    expect(parseGlobalVersionFlag(["-P", "staging", "-j", "--version"]))
+      .toEqual({ requested: true, json: true });
+    expect(parseGlobalVersionFlag(["--as", "staff_1", "--user-token", "t", "-v"]))
+      .toEqual({ requested: true, json: false });
+    expect(parseGlobalVersionFlag(["--profile=staging", "-v"]))
+      .toEqual({ requested: true, json: false });
+  });
+
+  test("ignores other global flags", () => {
+    expect(parseGlobalVersionFlag(["--verbose", "-v"])).toEqual({ requested: true, json: false });
+  });
+
+  test("does not hijack a subcommand's own --version option", () => {
+    expect(parseGlobalVersionFlag(["chat", "messages", "--version", "0"]))
+      .toEqual({ requested: false, json: false });
+    expect(parseGlobalVersionFlag(["chat", "messages", "--version", "0", "-j"]))
+      .toEqual({ requested: false, json: false });
+  });
+
+  test("returns not-requested for plain command invocations", () => {
+    expect(parseGlobalVersionFlag([])).toEqual({ requested: false, json: false });
+    expect(parseGlobalVersionFlag(["health", "check"])).toEqual({ requested: false, json: false });
+    expect(parseGlobalVersionFlag(["-j", "health", "check"])).toEqual({ requested: false, json: true });
   });
 });

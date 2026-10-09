@@ -2,7 +2,7 @@
 
 # Lansenger CLI (TypeScript)
 
-Outil en ligne de commande Lansenger — interagissez avec les API Lansenger directement depuis le terminal : envoyez des messages, gérez des groupes, interrogez le personnel/les départements, gérez les calendriers et les tâches, et plus encore.
+Outil en ligne de commande Lansenger — interagissez avec les API Lansenger directement depuis le terminal : envoyez des messages, gérez des groupes, interrogez le personnel/les départements, gérez les calendriers, et plus encore.
 
 La syntaxe des commandes est identique aux versions Python et Go. Installez n'importe laquelle.
 
@@ -81,13 +81,8 @@ lansenger health check
 | `staff` | Interroger le personnel | `basic-info`, `detail`, `ancestors`, `id-mapping`, `org-extra-fields`, `search`, `org-info` |
 | `department` | Interroger les départements | `detail`, `children`, `staffs` |
 | `calendar` | Calendrier et planification | `primary`, `create-schedule`, `fetch-schedule`, `delete-schedule`, `list-schedules`, `attendees`, `add-attendees`, `delete-attendees`, `update-attendees`, `update-schedule`, `attendee-meta` |
-| `todo` | Gestion des tâches | `create`, `update`, `update-status`, `delete`, `list`, `fetch-by-id`, `fetch-by-source`, `status-counts`, `executor-status`, `add-executors`, `delete-executors`, `executor-list` |
 | `bot-command` | Commandes de bot | `create`, `query`, `delete` |
 | `personal-app` | Applications personnelles | `create`, `update`, `info`, `delete`, `list` |
-| `notice` | Notifications via comptes officiels (通知系统) | `send`, `accounts` |
-| `questionnaire` | Questionnaires (问卷系统) | `save`, `save-questions`, `publish`, `withdraw`, `finish`, `delete`, `detail`, `brief`, `accounts`, `created-list`, `answers`, `answer-detail`, `answer-data`, `upload-url`, ... |
-| `boardroom` | Réservation de salles (会议室预定 V2) | `rooms`, `room-detail`, `schedule`, `reserve-detail`, `reserve`, `edit-reserve`, `cancel`, `confirm-sign`, `my-reserves`, `gradings`, `area-offices` |
-| `personal-todo` | Todos personnels (个人待办) | `save`, `update`, `list`, `upload-resource`, `download-url`, `upload-url` |
 | `oauth` | Authentification OAuth2 | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
 | `callback` | Analyse des callbacks | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
 | `media` | Fichiers média | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
@@ -267,26 +262,6 @@ lansenger calendar fetch-schedule cal001 schedule001 --user-token YOUR_TOKEN
 lansenger calendar delete-schedule cal001 schedule001 --user-token YOUR_TOKEN
 ```
 
-### Tâches
-
-```bash
-# Créer
-lansenger todo create "Approuver document" https://app.com/doc https://app.com/doc \
-  "staff001,staff002" org001 --desc "À réviser" --type 2
-
-# Mettre à jour le statut
-lansenger todo update-status task001 22 org001
-
-# Statut d'exécutant
-lansenger todo executor-status '[{"executorId":"staff001","status":"22"}]' org001 --task-id task001
-
-# Lister
-lansenger todo list org001 --status 21,22
-
-# Supprimer
-lansenger todo delete task001 org001
-```
-
 ### Authentification OAuth2
 
 ```bash
@@ -438,7 +413,6 @@ La plateforme Lansenger propose trois types d'identité avec différents accès 
 | `staff *` (contacts read-only) | N | **Y** | **Y** | `search` nécessite en plus userToken |
 | `department *` | N | **Y** | **Y** | Applications niveau org uniquement |
 | `calendar *` | N | **Y** | **Y** | Avec userToken = identité utilisateur ; sans = identité bot |
-| `todo *` | N | **Y** | **Y** | Applications niveau org uniquement |
 | `chat list/messages` | N | **Y** | **Y** | Applications niveau org uniquement |
 | `group *` (group management V2) | N | N | **Y** | Nécessite que le bot soit dans le groupe |
 | `media upload` | **Y** | **Y** | **Y** | Téléversement général |
@@ -451,7 +425,7 @@ La plateforme Lansenger propose trois types d'identité avec différents accès 
 
 > **Personal Bot** peut seulement envoyer/recevoir des messages et téléverser/télécharger des fichiers. Ne peut pas accéder aux contacts, calendriers ou OAuth2.
 >
-> **Org App vs Org App + Bot** : Même appID/appSecret. La seule différence est les canaux de messagerie — seuls les bots peuvent envoyer des DMs bot et des messages de groupe (car seuls les bots peuvent rejoindre les groupes). Toutes les autres API (contacts, calendrier, tâches, conversations, OAuth2, streaming) fonctionnent de manière identique pour les deux. Actuellement, seules les applications auto-hébergées supportent la capacité bot.
+> **Org App vs Org App + Bot** : Même appID/appSecret. La seule différence est les canaux de messagerie — seuls les bots peuvent envoyer des DMs bot et des messages de groupe (car seuls les bots peuvent rejoindre les groupes). Toutes les autres API (contacts, calendrier, conversations, OAuth2, streaming) fonctionnent de manière identique pour les deux. Actuellement, seules les applications auto-hébergées supportent la capacité bot.
 
 ### Permissions du Centre Développeur
 

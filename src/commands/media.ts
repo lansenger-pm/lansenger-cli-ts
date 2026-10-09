@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { getClient, outputResult, checkError } from "../utils";
+import { getClient, outputResult, checkError, failError } from "../utils";
 
 export function registerMediaCommands(program: Command) {
   const cmd = program.command("media").description("Upload and download media files");
@@ -80,11 +80,17 @@ export function registerMediaCommands(program: Command) {
     .option("--media-type <type>", "file, image, or video", "file")
     .action(async (mediaId, opts) => {
       const client = getClient();
-      const savedPath = await client.downloadMediaToFile(mediaId, {
-        target_path: opts.output || undefined,
-        media_type: opts.mediaType,
-      });
-      outputResult({ success: true, path: savedPath });
+      try {
+        const savedPath = await client.downloadMediaToFile(mediaId, {
+          target_path: opts.output || undefined,
+          media_type: opts.mediaType,
+        });
+        outputResult({ success: true, path: savedPath });
+      } catch (err) {
+        // downloadMediaToFile 在失败时抛 LansengerFileError（与返回结果对象的
+        // downloadMediaFile 不同），不能让堆栈直接冒到用户面前。
+        failError(err);
+      }
     });
 
   cmd

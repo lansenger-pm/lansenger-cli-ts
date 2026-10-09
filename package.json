@@ -1,7 +1,7 @@
 {
   "name": "lansenger-cli",
-  "version": "1.6.1",
-  "description": "CLI for Lansenger (\u84dd\u4fe1) \u2014 send messages, manage groups, staff, departments, calendars, todos, and more",
+  "version": "1.7.0",
+  "description": "CLI for Lansenger (\u84dd\u4fe1) \u2014 send messages, manage groups, staff, departments, calendars, and more",
   "main": "dist/main.js",
   "bin": {
     "lansenger": "dist/main.js"
@@ -22,7 +22,7 @@
   "dependencies": {
     "cli-table3": "^0.6.0",
     "commander": "^12.0.0",
-    "lansenger-sdk-ts": "^1.6.1",
+    "lansenger-sdk-ts": "^1.9.0",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {

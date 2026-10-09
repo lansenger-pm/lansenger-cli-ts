@@ -2,7 +2,7 @@
 
 # Lansenger CLI (TypeScript)
 
-Lansenger 命令列工具 — 在終端機直接呼叫藍信開放平台 API，發送訊息、管理群組、查詢人員/部門、操作行事曆與待辦等。
+Lansenger 命令列工具 — 在終端機直接呼叫藍信開放平台 API，發送訊息、管理群組、查詢人員/部門、操作行事曆等。
 
 命令語法與 Python/Go 版完全一致，安裝任一版本即可使用。
 
@@ -83,13 +83,8 @@ lansenger health check
 | `staff` | 查詢人員資訊 | `basic-info`, `detail`, `ancestors`, `id-mapping`, `org-extra-fields`, `search`, `org-info` |
 | `department` | 查詢部門資訊 | `detail`, `children`, `staffs` |
 | `calendar` | 行事曆操作 | `primary`, `create-schedule`, `fetch-schedule`, `delete-schedule`, `list-schedules`, `attendees`, `add-attendees`, `delete-attendees`, `update-attendees`, `update-schedule`, `attendee-meta` |
-| `todo` | 待辦任務管理 | `create`, `update`, `update-status`, `delete`, `list`, `fetch-by-id`, `fetch-by-source`, `status-counts`, `executor-status`, `add-executors`, `delete-executors`, `executor-list` |
 | `bot-command` | 機器人命令 | `create`, `query`, `delete` |
 | `personal-app` | 個人應用 | `create`, `update`, `info`, `delete`, `list` |
-| `notice` | 官方帳號通知（通知系統） | `send`, `accounts` |
-| `questionnaire` | 問卷系統 | `save`, `save-questions`, `publish`, `withdraw`, `finish`, `delete`, `detail`, `brief`, `accounts`, `created-list`, `answers`, `answer-detail`, `answer-data`, `upload-url`, ... |
-| `boardroom` | 會議室預訂 V2 | `rooms`, `room-detail`, `schedule`, `reserve-detail`, `reserve`, `edit-reserve`, `cancel`, `confirm-sign`, `my-reserves`, `gradings`, `area-offices` |
-| `personal-todo` | 使用者個人待辦 | `save`, `update`, `list`, `upload-resource`, `download-url`, `upload-url` |
 | `oauth` | OAuth2 使用者認證 | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
 | `callback` | 回呼事件解析 | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
 | `media` | 媒體檔案操作 | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
@@ -269,26 +264,6 @@ lansenger calendar fetch-schedule cal001 schedule001 --user-token YOUR_TOKEN
 lansenger calendar delete-schedule cal001 schedule001 --user-token YOUR_TOKEN
 ```
 
-### 待辦任務
-
-```bash
-# 建立待辦
-lansenger todo create "審批檔案" https://app.com/doc https://app.com/doc \
-  "staff001,staff002" org001 --desc "請審批" --type 2
-
-# 更新待辦狀態（11=待閱, 12=已閱, 21=待辦, 22=已辦）
-lansenger todo update-status task001 22 org001
-
-# 更新執行人狀態
-lansenger todo executor-status '[{"executorId":"staff001","status":"22"}]' org001 --task-id task001
-
-# 檢視待辦列表
-lansenger todo list org001 --status 21,22
-
-# 刪除待辦
-lansenger todo delete task001 org001
-```
-
 ### OAuth2 使用者認證
 
 ```bash
@@ -442,7 +417,6 @@ lansenger config show --profile my-app
 | `staff *` (contacts read-only) | N | **Y** | **Y** | `search` 額外需要 userToken |
 | `department *` | N | **Y** | **Y** | 僅組織級應用 |
 | `calendar *` | N | **Y** | **Y** | 有 userToken = 使用者身份；無 = bot 身份 |
-| `todo *` | N | **Y** | **Y** | 僅組織級應用 |
 | `chat list/messages` | N | **Y** | **Y** | 僅組織級應用 |
 | `group *` (group management V2) | N | N | **Y** | 需要 bot 在群組內 |
 | `media upload` | **Y** | **Y** | **Y** | 通用上載 |
@@ -455,7 +429,7 @@ lansenger config show --profile my-app
 
 > **Personal Bot** 只能收發訊息和上載下載檔案，無法存取通訊錄、行事曆或 OAuth2。
 >
-> **Org App vs Org App + Bot**：使用相同的 appID/appSecret，唯一區別是訊息通道——只有 bot 才能傳送 bot 私聊和群組訊息（因為只有 bot 能加入群組）。所有其他 API（通訊錄、行事曆、待辦、會話、OAuth2、串流訊息）兩者功能完全一致。目前僅自建應用支援 bot 能力。
+> **Org App vs Org App + Bot**：使用相同的 appID/appSecret，唯一區別是訊息通道——只有 bot 才能傳送 bot 私聊和群組訊息（因為只有 bot 能加入群組）。所有其他 API（通訊錄、行事曆、會話、OAuth2、串流訊息）兩者功能完全一致。目前僅自建應用支援 bot 能力。
 
 ### 開發者中心權限
 

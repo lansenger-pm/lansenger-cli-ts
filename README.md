@@ -2,7 +2,7 @@
 
 # Lansenger CLI (TypeScript)
 
-Lansenger command-line tool — interact with Lansenger APIs directly from the terminal: send messages, manage groups, query staff/departments, operate calendars and todos, and more.
+Lansenger command-line tool — interact with Lansenger APIs directly from the terminal: send messages, manage groups, query staff/departments, operate calendars, and more.
 
 Command syntax is consistent with the Python and Go versions. Install any one.
 
@@ -83,13 +83,8 @@ lansenger health check
 | `staff` | Query staff info | `basic-info`, `detail`, `ancestors`, `id-mapping`, `org-extra-fields`, `search`, `org-info` |
 | `department` | Query department info | `detail`, `children`, `staffs` |
 | `calendar` | Calendar & schedule | `primary`, `create-schedule`, `fetch-schedule`, `delete-schedule`, `list-schedules`, `attendees`, `add-attendees`, `delete-attendees`, `update-attendees`, `update-schedule`, `attendee-meta` |
-| `todo` | Todo task management | `create`, `update`, `update-status`, `delete`, `list`, `fetch-by-id`, `fetch-by-source`, `status-counts`, `executor-status`, `add-executors`, `delete-executors`, `executor-list` |
 | `bot-command` | Bot slash commands | `create`, `query`, `delete` |
 | `personal-app` | Personal apps/bots | `create`, `update`, `info`, `delete`, `list` |
-| `notice` | Notices via official accounts (通知系统) | `send`, `accounts` |
-| `questionnaire` | Questionnaires (问卷系统) | `save`, `save-questions`, `publish`, `withdraw`, `finish`, `delete`, `detail`, `brief`, `accounts`, `created-list`, `answers`, `answer-detail`, `answer-data`, `upload-url`, ... |
-| `boardroom` | Meeting-room reservation (会议室预定 V2) | `rooms`, `room-detail`, `schedule`, `reserve-detail`, `reserve`, `edit-reserve`, `cancel`, `confirm-sign`, `my-reserves`, `gradings`, `area-offices` |
-| `personal-todo` | User-owned personal todos (个人待办) | `save`, `update`, `list`, `upload-resource`, `download-url`, `upload-url` |
 | `oauth` | OAuth2 user auth | `authorize-url`, `exchange-code`, `refresh-token`, `user-info`, `parse-callback`, `validate-state` |
 | `callback` | Callback event parsing | `parse-payload`, `decrypt-payload`, `verify-signature`, `event-types` |
 | `media` | Media file operations | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
@@ -139,7 +134,7 @@ lansenger message send-text group123 "Bot check" --group --mention-bot bot001 --
 lansenger message send-text group123 "Got it" --group --ref-msg-id 524288-xxx
 
 # Bot channel broadcast
-lansenger message send-bot-message text '{"content":"Notice"}' --chat-id user001 --chat-id user002
+lansenger message send-bot-message text '{"content":"Hello"}' --chat-id user001 --chat-id user002
 
 # Bot channel reply (message reference)
 lansenger message send-bot-message text '{"content":"Reply"}' --chat-id user001 --ref-msg-id 524288-xxx
@@ -267,26 +262,6 @@ lansenger calendar fetch-schedule cal001 schedule001 --user-token YOUR_TOKEN
 
 # Delete schedule
 lansenger calendar delete-schedule cal001 schedule001 --user-token YOUR_TOKEN
-```
-
-### Todo Tasks
-
-```bash
-# Create todo
-lansenger todo create "Approve Document" https://app.com/doc https://app.com/doc \
-  "staff001,staff002" org001 --desc "Please review" --type 2
-
-# Update todo status (11=unread, 12=read, 21=pending, 22=done)
-lansenger todo update-status task001 22 org001
-
-# Update executor status
-lansenger todo executor-status '[{"executorId":"staff001","status":"22"}]' org001 --task-id task001
-
-# List todos
-lansenger todo list org001 --status 21,22
-
-# Delete todo
-lansenger todo delete task001 org001
 ```
 
 ### OAuth2 User Auth
@@ -442,7 +417,6 @@ The Lansenger platform has three identity types with different API access:
 | `staff *` (contacts read-only) | N | **Y** | **Y** | `search` additionally requires userToken |
 | `department *` | N | **Y** | **Y** | Org-level apps only |
 | `calendar *` | N | **Y** | **Y** | With userToken = user identity; without = bot identity |
-| `todo *` | N | **Y** | **Y** | Org-level apps only |
 | `chat list/messages` | N | **Y** | **Y** | Org-level apps only |
 | `group *` (group management V2) | N | N | **Y** | Requires bot to be in group |
 | `media upload` | **Y** | **Y** | **Y** | General upload |
@@ -455,7 +429,7 @@ The Lansenger platform has three identity types with different API access:
 
 > **Personal Bot** can only send/receive messages and upload/download files. Cannot access contacts, calendars, or OAuth2.
 >
-> **Org App vs Org App + Bot**: Same appID/appSecret. The only difference is messaging channels — only bots can send bot DMs and group messages (because only bots can join groups). All other APIs (contacts, calendar, todo, chat, OAuth2, streaming) work identically for both. Currently only self-built apps support bot capability.
+> **Org App vs Org App + Bot**: Same appID/appSecret. The only difference is messaging channels — only bots can send bot DMs and group messages (because only bots can join groups). All other APIs (contacts, calendar, chat, OAuth2, streaming) work identically for both. Currently only self-built apps support bot capability.
 
 ### Developer Center Permissions
 

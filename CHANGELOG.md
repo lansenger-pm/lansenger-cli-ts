@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.0] - 2026-10-09
+
+### Changed
+
+- **dep**: `lansenger-sdk-ts` bumped to `^1.9.0`.
+
+### Removed
+
+- Removed the 7 application domains: qingjia (leave V2), jiaban (overtime V2), questionnaire, notice, todo, boardroom, personalTodo. These differ from the standard Lansenger APIs and are customized per delivery, so they are not part of the delivery-invariant CLI. Their command modules under `src/commands/`, registrations in `src/main.ts`, tests, and the corresponding README sections in all 5 languages have been deleted.
+
+### Fixed
+
+- **`media download-to-file`**: a failed download (missing media, identity without access) now exits with code 1 and a single `Error: Download failed: …` line instead of an unhandled stack trace.
+- **`-v, --version`**: the version flag now works on its own (`lansenger -v` / `lansenger -j -v`), exiting 0 with the CLI and SDK versions. Previously the flag was only handled inside a `preAction` hook, so invoking it without a subcommand printed the help text and exited 1. A subcommand's own option of the same name (`chat messages --version <cursor>`) keeps its meaning.
+
+---
+
 ## [1.6.1] - 2026-09-23
 
 ### Fixed

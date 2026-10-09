@@ -253,6 +253,17 @@ export function checkError(result: any) {
   }
 }
 
+/** 把抛出的异常转成友好错误输出（不打印堆栈），退出码 1。 */
+export function failError(err: unknown): never {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (jsonOutput) {
+    console.log(JSON.stringify({ success: false, error: msg }, null, 2));
+  } else {
+    console.error("Error: " + msg);
+  }
+  process.exit(1);
+}
+
 export function parseJsonOption(val: string): any {
   try { return JSON.parse(val); }
   catch { console.error("Invalid JSON: " + val); process.exit(1); }
@@ -272,6 +283,30 @@ export function parseFieldOrJson(raw: string): any {
 
 export function commaList(val: string): string[] {
   return val.split(",").map(s => s.trim()).filter(s => s.length > 0);
+}
+
+// Detect a *global* `-v/--version` request before commander runs.
+// The root `preAction` hook only fires when a subcommand executes, so relying on
+// it alone made `lansenger -v` print help and exit 1. Only a flag that appears
+// before the subcommand path counts, so `chat messages --version <cursor>`
+// (a subcommand option) keeps its own meaning.
+const GLOBAL_VALUE_OPTIONS = new Set(["-P", "--profile", "--as", "--app-token", "--user-token"]);
+
+export function parseGlobalVersionFlag(argv: string[]): { requested: boolean; json: boolean } {
+  let json = false;
+  for (let i = 0; i < argv.length; i++) {
+    const token = argv[i];
+    if (token === "-j" || token === "--json") { json = true; continue; }
+    if (token === "-v" || token === "--version") return { requested: true, json };
+    const name = token.startsWith("--") && token.includes("=") ? token.slice(0, token.indexOf("=")) : token;
+    if (GLOBAL_VALUE_OPTIONS.has(name)) {
+      if (name === token) i++;  // skip the option's value
+      continue;
+    }
+    if (token.startsWith("-")) continue;  // other global flags, e.g. --verbose
+    break;  // first positional token starts the subcommand path
+  }
+  return { requested: false, json };
 }
 
 let _verbose = false;
