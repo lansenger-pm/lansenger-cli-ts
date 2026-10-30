@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.8.0] - 2026-10-30
+
+### Added
+
+- **recording**: new `recording` command group with 6 subcommands covering the 智能录音 open APIs — `list`, `detail`, `transcribe` / `summary` (high-risk write gate: `--yes` / `--dry-run`, exit code 10 without confirmation), `tags`, `templates`. `list` / `templates` accept `--page` / `--page-size`; `summary` accepts an optional `--template-id`; every subcommand supports `--json` and the global external-token mode (`--app-token` / `--user-token`).
+- **dep**: the `lansenger-sdk-ts` dependency lower bound stays `^1.9.0` in this commit and will be raised to `^1.10.0` when released (the recording client methods ship in SDK 1.10.0).
+- `tests/recording.test.ts` — the 6 subcommands, the high-risk gate (exit 10 / dry-run) and JSON output.
+
+---
+
 ## [1.7.0] - 2026-10-09
 
 ### Changed

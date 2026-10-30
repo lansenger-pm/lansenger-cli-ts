@@ -90,6 +90,7 @@ lansenger health check
 | `media` | 媒体文件操作 | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
 | `streaming` | 流式消息（AI 场景） | `create`, `fetch` |
 | `chat` | 会话与消息记录 | `list`, `messages` |
+| `recording` | 智能录音（转写 / 纪要 / 标签 / 模板） | `list`, `detail`, `transcribe`, `summary`, `tags`, `templates` |
 | `health` | 连接健康检查 | `check` |
 
 ## 常用示例
@@ -324,6 +325,33 @@ lansenger streaming create user123 single stream-session-001
 # 获取流式消息状态
 lansenger streaming fetch MSG_ID
 ```
+
+### 智能录音
+
+```bash
+# 录音列表（分页；hasMore 是唯一可靠的翻页信号）
+lansenger --as staff_001 recording list --page 1 --page-size 20
+
+# 查询录音详情（转写/纪要为异步任务，没有回调）
+lansenger --as staff_001 recording detail 10001-abc123
+
+# 提交转写任务（高危写：不带 --yes 会被拦下）
+lansenger --as staff_001 recording transcribe 10001-abc123 --yes
+
+# 提交会议纪要任务，可指定纪要模板（同样高危）
+lansenger --as staff_001 recording summary 10001-abc123 --template-id 10003-tpl001 --yes
+
+# 只演练写命令、不调用后端
+lansenger --as staff_001 recording transcribe 10001-abc123 --dry-run
+
+# 当前员工的标签 / 组织的纪要模板
+lansenger --as staff_001 recording tags
+lansenger --as staff_001 recording templates --page 1 --page-size 20
+```
+
+`transcribe` / `summary` 会扣减组织的转写/纪要配额；不带 `--yes` 时打印结构化确认并退出码 10（`--dry-run` 不调用后端、退出码 0）。
+
+示例用全局 `--as <staff_id>` 从凭证存储取该员工的 `user_token`；external 模式改用全局 `--app-token` / `--user-token` 显式传入。
 
 ## 全局选项
 

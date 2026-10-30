@@ -90,6 +90,7 @@ lansenger health check
 | `media` | Media file operations | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
 | `streaming` | Streaming messages (AI) | `create`, `fetch` |
 | `chat` | Conversations & messages | `list`, `messages` |
+| `recording` | Smart recording (transcription / summary / tags / templates) | `list`, `detail`, `transcribe`, `summary`, `tags`, `templates` |
 | `health` | Connection health check | `check` |
 
 ## Common Examples
@@ -324,6 +325,33 @@ lansenger streaming create user123 single stream-session-001
 # Get streaming message status
 lansenger streaming fetch MSG_ID
 ```
+
+### Smart Recording
+
+```bash
+# List recordings (paged; hasMore is the only reliable paging signal)
+lansenger --as staff_001 recording list --page 1 --page-size 20
+
+# Poll a recording's detail (transcribe / summary are async; there are no callbacks)
+lansenger --as staff_001 recording detail 10001-abc123
+
+# Submit an ASR transcription task (high-risk write: blocked without --yes)
+lansenger --as staff_001 recording transcribe 10001-abc123 --yes
+
+# Submit a meeting-summary task with an optional template (also high-risk)
+lansenger --as staff_001 recording summary 10001-abc123 --template-id 10003-tpl001 --yes
+
+# Rehearse a write command without calling the API
+lansenger --as staff_001 recording transcribe 10001-abc123 --dry-run
+
+# Tags of the current staff / summary templates of the organization
+lansenger --as staff_001 recording tags
+lansenger --as staff_001 recording templates --page 1 --page-size 20
+```
+
+`transcribe` and `summary` consume the organization's ASR / summary quota; without `--yes` they print a structured preview and exit with code 10 (`--dry-run` exits 0 without calling the API).
+
+The examples use the global `--as <staff_id>` option to load that staff member's `user_token` from the credential store; in external mode, pass the global `--app-token` / `--user-token` instead.
 
 ## Global Options
 

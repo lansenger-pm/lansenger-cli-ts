@@ -88,6 +88,7 @@ lansenger health check
 | `media` | Fichiers média | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
 | `streaming` | Messages streaming (IA) | `create`, `fetch` |
 | `chat` | Conversations et messages | `list`, `messages` |
+| `recording` | Enregistrements intelligents (transcription / résumé / tags / modèles) | `list`, `detail`, `transcribe`, `summary`, `tags`, `templates` |
 | `health` | Vérification de connexion | `check` |
 
 ## Exemples courants
@@ -322,6 +323,33 @@ lansenger streaming create user123 single stream-session-001
 # Statut du message
 lansenger streaming fetch MSG_ID
 ```
+
+### Enregistrement intelligent
+
+```bash
+# Lister les enregistrements (paginé ; hasMore est le seul signal de pagination fiable)
+lansenger --as staff_001 recording list --page 1 --page-size 20
+
+# Consulter le détail d'un enregistrement (transcription / compte rendu sont asynchrones, sans callback)
+lansenger --as staff_001 recording detail 10001-abc123
+
+# Soumettre une transcription ASR (écriture à haut risque : bloquée sans --yes)
+lansenger --as staff_001 recording transcribe 10001-abc123 --yes
+
+# Soumettre un compte rendu de réunion avec un modèle facultatif (également à haut risque)
+lansenger --as staff_001 recording summary 10001-abc123 --template-id 10003-tpl001 --yes
+
+# Simuler une commande d'écriture sans appeler l'API
+lansenger --as staff_001 recording transcribe 10001-abc123 --dry-run
+
+# Tags de l'employé courant / modèles de compte rendu de l'organisation
+lansenger --as staff_001 recording tags
+lansenger --as staff_001 recording templates --page 1 --page-size 20
+```
+
+`transcribe` et `summary` consomment le quota ASR / compte rendu de l'organisation ; sans `--yes` ils affichent un aperçu structuré et sortent avec le code 10 (`--dry-run` sort avec 0 sans appeler l'API).
+
+Les exemples utilisent l'option globale `--as <staff_id>` pour charger le `user_token` de cet employé depuis le stockage des identifiants ; en mode external, passez plutôt les options globales `--app-token` / `--user-token`.
 
 ## Options globales
 

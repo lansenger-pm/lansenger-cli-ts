@@ -90,6 +90,7 @@ lansenger health check
 | `media` | 媒體檔案操作 | `upload`, `upload-app`, `download`, `download-to-file`, `path` |
 | `streaming` | 串流訊息（AI 場景） | `create`, `fetch` |
 | `chat` | 會話與訊息記錄 | `list`, `messages` |
+| `recording` | 智能錄音（轉寫 / 紀要 / 標籤 / 範本） | `list`, `detail`, `transcribe`, `summary`, `tags`, `templates` |
 | `health` | 連線健康檢查 | `check` |
 
 ## 常用範例
@@ -324,6 +325,33 @@ lansenger streaming create user123 single stream-session-001
 # 取得串流訊息狀態
 lansenger streaming fetch MSG_ID
 ```
+
+### 智能錄音
+
+```bash
+# 錄音列表（分頁；hasMore 是唯一可靠的翻頁訊號）
+lansenger --as staff_001 recording list --page 1 --page-size 20
+
+# 查詢錄音詳情（轉寫/紀要為異步任務，沒有回呼）
+lansenger --as staff_001 recording detail 10001-abc123
+
+# 提交轉寫任務（高危寫：不帶 --yes 會被攔下）
+lansenger --as staff_001 recording transcribe 10001-abc123 --yes
+
+# 提交會議紀要任務，可指定紀要模板（同樣高危）
+lansenger --as staff_001 recording summary 10001-abc123 --template-id 10003-tpl001 --yes
+
+# 只演練寫命令、不調用後端
+lansenger --as staff_001 recording transcribe 10001-abc123 --dry-run
+
+# 當前員工的標籤 / 組織的紀要模板
+lansenger --as staff_001 recording tags
+lansenger --as staff_001 recording templates --page 1 --page-size 20
+```
+
+`transcribe` / `summary` 會扣減組織的轉寫/紀要配額；不帶 `--yes` 時打印結構化確認並以退出碼 10 結束（`--dry-run` 不調用後端、退出碼 0）。
+
+示例用全域 `--as <staff_id>` 從憑證儲存取該員工的 `user_token`；external 模式改用全域 `--app-token` / `--user-token` 顯式傳入。
 
 ## 全域選項
 

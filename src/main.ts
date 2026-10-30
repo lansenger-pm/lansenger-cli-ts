@@ -18,6 +18,7 @@ import { registerHealthCommands } from "./commands/health";
 import { registerBotCommandCommands } from "./commands/bot-command";
 import { registerPersonalAppCommands } from "./commands/personal-app";
 import { registerVideoconferenceCommands } from "./commands/videoconference";
+import { registerRecordingCommands } from "./commands/recording";
 
 const program = new Command();
 
@@ -56,6 +57,7 @@ registerHealthCommands(program);
 registerBotCommandCommands(program);
 registerPersonalAppCommands(program);
 registerVideoconferenceCommands(program);
+registerRecordingCommands(program);
 
 // `-v/--version` must work without a subcommand too, so handle it before
 // commander parses (the preAction hook never runs when no command is given).
